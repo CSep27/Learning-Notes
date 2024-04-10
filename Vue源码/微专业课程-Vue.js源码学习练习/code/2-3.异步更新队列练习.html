@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  let x
+  let y
+  let f = (n1, n2, n3) => n1 + n2 + n3 + 100
+
+  let active
+  let watch = (cb) => {
+    active = cb
+    active()
+    active = null
+  }
+
+  let nextTick = (cb) => Promise.resolve().then(cb)
+
+  // 队列
+  let queue = []
+
+  // 添加队列
+  let queueJob = (job) => {
+    if (!queue.includes(job)) {
+      queue.push(job)
+      // 添加之后，将执行放到异步任务中
+      nextTick(flushJob)
+    }
+  }
+
+  // 执行队列
+  let flushJob = () => {
+    while (queue.length > 0) {
+      let job = queue.shift()
+      job && job()
+    }
+  }
+
+
+  let Dep = class {
+    constructor() {
+      // 存放收集的active
+      this.deps = new Set()
+    }
+    // 依赖收集
+    depend() {
+      if (active) {
+        this.deps.add(active)
+      }
+    }
+    // 触发
+    notify() {
+      this.deps.forEach(dep => queueJob(dep))
+    }
+  }
+
+  let ref = initValue => {
+    let value = initValue
+    let dep = new Dep()
+    return Object.defineProperty({}, 'value', {
+      get() {
+        dep.depend()
+        return value
+      },
+      set(newValue) {
+        value = newValue
+        // active()
+        dep.notify()
+      }
+    })
+  }
+
+  x = ref(1)
+  y = ref(2)
+  z = ref(3)
+
+  watch(() => {
+    r = f(x.value, y.value, z.value)
+    console.log(r)
+  })
+
+  x.value = 8
+  y.value = 9
+  z.value = 10
+</script>
+
+</html>

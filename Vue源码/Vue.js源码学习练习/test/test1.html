@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>临时测试用</title>
+  </head>
+  <body>
+    <div id="d">
+      <p>Content</p>
+      <p>Further Elaborated</p>
+    </div>
+
+    <script>
+      const d = document.getElementById("d");
+      console.log(d.outerHTML);
+      const reg = /\((\{[^}]*\}|[^,]*),([^,]*)(?:,([^,]*))?\)/;
+      const reg1 = /\((\{[^}]*\}|[^,]*),([^,]*)\)/;
+      const arr = [1, 2, 3];
+      console.log(arr.filter((_) => _));
+
+      // 对处理过的str的结果进行缓存
+      function cached(fn) {
+        const cache = Object.create(null);
+        return function cachedFn(str) {
+          const hit = cache[str];
+          return hit || (cache[str] = fn(str));
+        };
+      }
+
+      const camelizeRE = /-(\w)/g;
+      const camelize = cached((str) => {
+        return str.replace(camelizeRE, (_, c) => {
+          console.log(_, c);
+          // _ 表示匹配上的部分
+          // c是正则中捕获的部分
+          // 返回的值就是用来替换原始字符串中匹配上的部分
+          // 示例中就是把匹配到的 -l 替换成 L
+          return c ? c.toUpperCase() : "";
+        });
+      });
+      // 调用两次 camelize 里的console只会打印一次，第二次会直接从cache里拿结果
+      console.log(camelize("name-list"));
+      console.log(camelize("name-list"));
+
+      const text = "{{ obj.text }} my {{name}} age";
+      const parseText = (text) => {
+        const parseFilters = (_) => _;
+        const tagRE = /\{\{((?:.|\n)+?)\}\}/g;
+        const tokens = [];
+        let lastIndex = (tagRE.lastIndex = 0);
+        let match, index;
+        while ((match = tagRE.exec(text))) {
+          index = match.index;
+          // push text token
+          if (index > lastIndex) {
+            tokens.push(JSON.stringify(text.slice(lastIndex, index)));
+          }
+          // tag token
+          const exp = parseFilters(match[1].trim());
+          tokens.push(`_s(${exp})`);
+          lastIndex = index + match[0].length;
+        }
+        if (lastIndex < text.length) {
+          tokens.push(JSON.stringify(text.slice(lastIndex)));
+        }
+        // tokens ['_s(obj.text)', '" my "', '_s(name)']
+        return tokens.join("+");
+      };
+
+      // _s(obj.text)+" my "+_s(name)
+      console.log(parseText(text));
+
+      function makeMap(str, expectsLowerCase) {
+        const map = Object.create(null);
+        const list = str.split(",");
+        for (let i = 0; i < list.length; i++) {
+          map[list[i]] = true;
+        }
+        return expectsLowerCase
+          ? (val) => map[val.toLowerCase()]
+          : (val) => map[val];
+      }
+      function genStaticKeys(keys) {
+        return makeMap(
+          "type,tag,attrsList,attrsMap,plain,parent,children,attrs" +
+            (keys ? "," + keys : "")
+        );
+      }
+      const genStaticKeysCached = cached(genStaticKeys);
+      isStaticKey = genStaticKeysCached("");
+      console.log(isStaticKey);
+      const node = { type: "", tag: "", other: "" };
+      const b = Object.keys(node).every(isStaticKey);
+      console.log(b);
+
+      const obj = {};
+      let aValue = 9;
+      Object.defineProperty(obj, "a", {
+        get() {
+          console.log("get obj.a");
+          return aValue;
+        },
+        set(newVal) {
+          console.log("set obj.a", newVal);
+          aValue = "newVal";
+        },
+      });
+      let pathList = [
+        "*",
+        "/about",
+        "/ele",
+        "/test2",
+        "/async-comp",
+        "/update-children",
+      ];
+      for (var i = 0, l = pathList.length; i < l; i++) {
+        if (pathList[i] === "*") {
+          pathList.push(pathList.splice(i, 1)[0]);
+          l--;
+          i--;
+        }
+      }
+      console.log(pathList);
+    </script>
+  </body>
+</html>

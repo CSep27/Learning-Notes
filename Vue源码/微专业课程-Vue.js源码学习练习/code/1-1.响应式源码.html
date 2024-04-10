@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	
+</body>
+<script>
+	// 收集依赖 再通知依赖更新
+	// 为什么收集依赖，因为可能一个变量的修改会涉及到模板中多处的变化，需要将依赖变量的地方收集起来，等更新时批量操作
+	let x
+	let y
+	let z
+	let f = n => n * 100 + 100
+	let fz = n => n + 1
+
+	let active
+	let watch = (cb) => {
+		active = cb
+		active()
+		active = null // 避免重复收集
+	}
+	// 当X变化时，引起y和z的变化，一个变化引发多个变化
+	class Dep {
+		constructor() {
+				// Set 数据结构 类似于数组，但成员都是唯一的
+			// 通过new生成Set数据结构
+			this.deps = new Set()
+		}
+		depend () {
+			// 依赖收集
+			if (active) {
+				console.log('depend')
+				// 通过add()方法向Set结构加入成员
+				this.deps.add(active)
+			}
+		}
+		notify () {
+			// 触发
+			console.log('notify')
+			this.deps.forEach(dep => dep())
+		}
+	}
+	/*let d = new Dep()
+	d.hasOwnProperty('x') // true
+	d.hasOwnProperty('deps') // true
+	d.hasOwnProperty('depend') // false
+	d.__proto__.hasOwnProperty('depend') // false*/
+	let ref = initValue => {
+		let value = initValue
+		let dep = new Dep()
+		return Object.defineProperty({}, 'value', {
+			get () {
+				console.log('get')
+				dep.depend()
+				console.log(dep)
+				return value
+			},
+			set (newValue) {
+				console.log('set')
+				value = newValue
+				dep.notify()
+			}
+		})
+	}
+	x = ref(1)
+	watch(() => {
+		console.log('active1')
+		y = f(x.value)
+		console.log(y)
+	})
+
+	watch(() => {
+		console.log('active2')
+		z = fz(x.value)
+		console.log(z)
+	})
+	// 进入页面时，x赋值为ref函数返回的对象，有value属性，值为传入的1（调用get时返回value等于传入的initValue即1）
+	// watch调用，active为传入的函数，执行active
+	// 执行第一行，打印'active'
+	// 执行第二行，获取x.value的值，触发get，打印'get'
+	//                 执行dep.depend()，打印'depend'，active存在，dep.deps增加数据active
+	//           执行f()，y值计算为200
+	// 执行第三行，打印200
+	// active置为null   (已经添加到dep.deps中)
+
+	// 'active' 'get' 'depend' 200
+
+	// x.value = 2
+	// 'set' 'notify' 'active' 'get' 300
+
+
+	// x.value = 2
+	/*let obj = {}
+	Object.defineProperty(obj, 'value', {
+		get () {
+			console.log('get')
+			return 1
+		},
+		set (newValue) {
+			console.log('set')
+			value = newValue
+		}
+	})*/
+</script>
+</html>

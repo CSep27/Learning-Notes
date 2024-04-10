@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MyVue</title>
+  </head>
+  <body></body>
+  <!-- <script type="module" src="./index.mjs"></script> -->
+  <script type="module">
+    import MyVue from "./index.mjs";
+    debugger;
+
+    const options = {
+      render: function (createElement) {
+        return createElement(
+          "div",
+          {
+            attrs: {
+              id: "app",
+            },
+          },
+          this.message
+        );
+      },
+      data: {
+        message: "1",
+      },
+      methods: {
+        click() {
+          this.message = 2;
+        },
+      },
+    };
+    new MyVue(options).$mount();
+
+    // 1. 把data 变成响应式数据
+    // 2. render函数 渲染成DOM插入 body中
+    // 3. 改变 message 的值，重新渲染
+  </script>
+</html>

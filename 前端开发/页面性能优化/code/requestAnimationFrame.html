@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .canvas {
+        font-family: Arial, Tahoma;
+        background-image: linear-gradient(
+          #af7bb3,
+          #d87be8,
+          #d99eef,
+          #dec2f1,
+          #e2cbf1,
+          #ebe6ef
+        );
+        width: 566px;
+        height: 353.75px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: -283px;
+        margin-top: -176.87px;
+        overflow: hidden;
+        z-index: -20;
+        border-radius: 4px;
+      }
+
+      .values {
+        position: absolute;
+        white-space: nowrap;
+        right: 0;
+        top: -28px;
+        font-size: 0.8rem;
+        background: #252525;
+        color: #d6d3d3;
+        padding: 3px;
+        border-radius: 2px;
+        z-index: 10;
+        font-style: italic;
+        text-align: center;
+      }
+
+      .values:before {
+        content: "";
+        width: 0;
+        height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid #252525;
+        position: absolute;
+        bottom: -6px;
+        right: 8px;
+      }
+
+      .values span {
+        display: block;
+        font-size: 0.65rem;
+      }
+
+      .airplane {
+        width: 40px;
+        height: 15px;
+        position: absolute;
+        left: 0;
+        border: #fff 1px dashed;
+        will-change: transform;
+      }
+
+      .airplane svg {
+        width: 40px;
+        height: 15px;
+      }
+
+      .sun {
+        width: 250px;
+        height: 250px;
+        background-image: linear-gradient(
+          to bottom,
+          #ffb100,
+          rgba(224, 114, 54, 0) 50%
+        );
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: -125px;
+        margin-top: -125px;
+        border-radius: 50%;
+        z-index: -10;
+      }
+
+      .clouds {
+        width: 600px;
+        height: 200px;
+        position: absolute;
+      }
+
+      .cloud {
+        width: 50px;
+        height: 30px;
+        position: absolute;
+      }
+
+      .cloud:nth-child(1) {
+        left: 145px;
+        top: 95px;
+        z-index: -5;
+      }
+
+      .cloud:nth-child(1) svg {
+        fill: #eed0f5;
+        width: 50px;
+      }
+
+      .cloud:nth-child(2) {
+        left: 80px;
+        top: 142px;
+      }
+
+      .cloud:nth-child(3) {
+        left: 220px;
+        top: 120px;
+        z-index: -5;
+      }
+
+      .cloud:nth-child(3) svg {
+        fill: #eed0f5;
+      }
+
+      .cloud:nth-child(4) {
+        left: 225px;
+        top: 165px;
+        display: none;
+      }
+
+      .cloud:nth-child(5) {
+        left: 266px;
+        top: 160px;
+      }
+
+      .cloud:nth-child(5) svg {
+        fill: #eed0f5;
+      }
+
+      .cloud:nth-child(6) {
+        left: 364px;
+        top: 140px;
+      }
+
+      .cloud:nth-child(7) {
+        left: 385px;
+        top: 111px;
+        z-index: -5;
+      }
+
+      .cloud:nth-child(7) svg {
+        fill: #b985dc;
+      }
+
+      .cloud:nth-child(8) {
+        left: 400px;
+        top: 183px;
+        display: none;
+      }
+
+      .cloud:nth-child(9) {
+        left: 340px;
+        top: 175px;
+        z-index: -5;
+      }
+
+      .cloud:nth-child(9) svg {
+        fill: #a684bd;
+      }
+
+      .cloud svg {
+        width: 100px;
+        height: 60px;
+        fill: #fff;
+      }
+
+      .graph {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        overflow: visible;
+        z-index: -5;
+      }
+
+      .graph path {
+        stroke: #b145bd;
+        stroke-width: 2px;
+        stroke-linecap: round;
+        fill: none;
+        stroke-dasharray: 5px;
+      }
+
+      .cord-system {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: -10;
+      }
+
+      .cord-system:before {
+        content: "";
+        display: block;
+        background: #d27019;
+        position: absolute;
+      }
+
+      .cord-system:before {
+        width: 100%;
+        height: 1px;
+        bottom: calc(50%);
+        left: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Keeping the svg icons here, but you don't have to :) -->
+    <div style="display: none">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:svg="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <symbol viewBox="0 0 333 333" id="icon-cloud">
+            <path
+              d="M18 209l299 0c3,-20 -31,-38 -52,-28 -4,-29 -36,-40 -69,-22 -17,-48 -97,-48 -112,10 -34,-16 -74,13 -66,40z"
+            />
+          </symbol>
+          <symbol
+            preserveAspectRatio="none"
+            viewBox="0 0 586 194"
+            id="icon-airplane"
+          >
+            <path
+              d="M510.684 81.884H311.395l-56.373-38.651h-56.451l22.904 38.65H90.082L43.252 0H0v137.53c0 30.736 24.91 55.659 55.636 55.659h455.048c30.726 0 75.297-24.923 75.297-55.659 0-30.729-44.571-55.646-75.297-55.646zm30.9 52.151h-55.661c-2.834 0-5.157-2.323-5.157-5.158v-22.16c61.666 1.437 65.121 22.231 65.121 22.231.472 2.796-1.469 5.087-4.303 5.087z"
+              fill="#000"
+            />
+          </symbol>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="canvas">
+      <svg class="graph"><path></path></svg>
+      <!-- <div class="cord-system"></div> -->
+
+      <div class="airplane">
+        <div class="values">
+          <span>transform: translate(Xpx, Ypx)</span>
+        </div>
+        <svg src="airplane.svg"><use xlink:href="#icon-airplane"></use></svg>
+      </div>
+      <!--/airplane-->
+
+      <div class="sun"></div>
+      <div class="clouds">
+        <div class="cloud">
+          <svg><use xlink:href="#icon-cloud"></use></svg>
+        </div>
+        <div class="cloud">
+          <svg><use xlink:href="#icon-cloud"></use></svg>
+        </div>
+        <div class="cloud">
+          <svg><use xlink:href="#icon-cloud"></use></svg>
+        </div>
+        <div class="cloud">
+          <svg><use xlink:href="#icon-cloud"></use></svg>
+        </div>
+        <div class="cloud">
+          <svg><use xlink:href="#icon-cloud"></use></svg>
+        </div>
+        <div class="cloud">
+          <svg><use xlink:href="#icon-cloud"></use></svg>
+        </div>
+        <div class="cloud">
+          <svg><use xlink:href="#icon-cloud"></use></svg>
+        </div>
+        <div class="cloud">
+          <svg><use xlink:href="#icon-cloud"></use></svg>
+        </div>
+        <div class="cloud">
+          <svg><use xlink:href="#icon-cloud"></use></svg>
+        </div>
+      </div>
+      <!--/clouds-->
+    </div>
+    <!--/canvas-->
+  </body>
+  <script>
+    (function () {
+      const canvasWidth = 610;
+      const airplane = document.querySelector(".airplane");
+      const valueContainer = document.querySelector(".values span");
+
+      let x = 0;
+
+      // Draw the sign graph, just to display the animation path
+      drawSinGraph(canvasWidth);
+
+      // Initiate the animation
+      fly();
+
+      function calcSin(x) {
+        return 25 * Math.sin(x / 35) + 150;
+      }
+
+      function makeSvgPath(points) {
+        return (path =
+          "M" +
+          points
+            .map((point) => {
+              return point[0] + "," + point[1];
+            })
+            .join(" L"));
+      }
+
+      function drawSinGraph(length) {
+        let xValues = Array.from(Array(length).keys());
+        let points = xValues.map((x) => [x, calcSin(x)]);
+
+        document
+          .querySelector(".graph path")
+          .setAttribute("d", makeSvgPath(points));
+      }
+
+      function fly() {
+        // If the plane flies beyond the canvas reset the animation
+        if (x > canvasWidth) {
+          x = 0;
+        }
+
+        let y = calcSin(x);
+
+        airplane.style.transform = "translateZ(0)";
+        airplane.style.transform = "translate(" + x + "px," + y + "px)";
+
+        // Uncomment this part to test with left/right props
+        //airplane.style.left = x + 'px'
+        //airplane.style.top = y + 'px'
+
+        x += 0.25;
+
+        // Emit "flew" event
+        document.dispatchEvent(new CustomEvent("flew", { detail: { x, y } }));
+
+        requestAnimationFrame(fly);
+      }
+    })();
+  </script>
+</html>

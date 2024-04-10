@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+	let active
+	let watch = (cb) => {
+		active = cb
+		active()
+		active = null // 避免重复收集
+	}
+
+	// 队列
+	/* let queue = []
+
+	let nextTick = cb => Promise.resolve().then(cb)
+
+	// 往队列里添加任务
+	let queueJob = job => {
+		if (!queue.includes(job)) {
+			queue.push(job)
+			nextTick(flushJobs)
+		}
+	}
+	// 执行任务 何时执行，可以放到微任务中，待宏任务执行完后执行
+	// 宏任务 微任务 宏任务会在微任务执行完后立即执行
+	let flushJobs = () => {
+		let job
+		while (queue.length > 0) {
+			job = queue.shift()
+			job && job()
+		}
+	} */
+
+
+	class Dep {
+		// Set 数据结构 类似于数组，但成员都是唯一的
+		// 通过new生成Set数据结构
+		constructor() {
+			this.deps = new Set()
+		}
+		depend() {
+			// 依赖收集
+			if (active) {
+				console.log('depend')
+				// 通过add()方法向Set结构加入成员
+				this.deps.add(active)
+			}
+		}
+		notify() {
+			// 触发
+			console.log('notify')
+			// 放到队列中
+			this.deps.forEach(dep => dep())
+		}
+	}
+	let ref = initValue => {
+		let value = initValue
+		let dep = new Dep()
+		return Object.defineProperty({}, 'value', {
+			get() {
+				console.log('get')
+				dep.depend()
+				console.log(dep)
+				return value
+			},
+			set(newValue) {
+				console.log('set')
+				value = newValue
+				dep.notify()
+			}
+		})
+	}
+	let x = ref(1)
+	let y = ref(2)
+	let z = ref(3)
+	watch(() => {
+		let tpl = `hello ${x.value} ${y.value} ${z.value} <br/>`
+		document.write(tpl)
+	})
+
+	x.value = 2
+	y.value = 2
+	z.value = 2
+
+	/* 
+	输出
+	hello 1 2 3
+	hello 2 2 3
+	hello 2 2 3
+	hello 2 2 2
+	修改三次，输出三次
+	 */
+
+	// 当模板依赖于多个变量时，每个变量变化都会触发一次更新
+	// 如何优化？
+	// 在一个函数块中包含对多个变量的依赖时，可以将这些依赖放到一个队列中
+	// 当函数块执行完毕后，再进行一次批量的渲染操作
+
+	// Vue.nextTick([callback, context])
+	// vm.$nextTick([callback]) // 不同之处，this为Vue实例
+	// 下次DOM更新循环之后执行
+	// 通常用于在修改数据之后使用，在回调中获取更新后的DOM
+	/*mounted () {
+		this.$nextTick(() => {
+			// 这里代码将在当前组件和所以子组件挂载完毕后执行
+		})
+	}*/
+</script>
+
+</html>

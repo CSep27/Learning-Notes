@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>临时测试用2</title>
+  </head>
+  <body>
+    <script>
+      // const strPro = String.prototype;
+      /* String.prototype.toString = function (str) {
+        console.log("String.prototype.toString", str);
+        return String.toString(str);
+      };
+      // const str = "str";
+      console.log("str".toString());
+      console.log(new String("s").toString()); */
+
+      var s1 = "call_me_R"; // 隐式装箱
+      var s2 = s1.substring(2);
+
+      // 不能给s1添加属性
+      s1.job = "frontend engineer";
+      s1.sayHello = function () {
+        console.log("hello kitty");
+      };
+      console.log(s1.job); // undefined
+      // s1.sayHello(); // Uncaught TypeError: s1.sayHello is not a function
+
+      var objStr = new String("call_me_R");
+      objStr.job = "frontend engineer";
+      objStr.sayHi = function () {
+        console.log("hello kitty");
+      };
+      console.log(objStr.job); // frontend engineer
+      objStr.sayHi(); // hello kitty
+
+      var objNum = new Number(64);
+      var objStr = new String("64");
+      console.log(typeof objNum); // object
+      console.log(typeof objStr); // object
+      console.log(typeof objNum.valueOf()); // number 基本的数字类型，想要的
+      console.log(typeof objNum.toString()); // string 基本的字符类型，不想要的
+      console.log(typeof objStr.valueOf()); // string 基本的数据类型，不想要的
+      console.log(typeof objStr.toString()); // string 基本的数据类型，想要的
+    </script>
+  </body>
+</html>

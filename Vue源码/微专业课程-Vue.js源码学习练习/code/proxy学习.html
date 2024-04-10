@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  /* let handler = {
+    get: function (obj, prop) {
+      return prop in obj ? obj[prop] : 37
+    }
+  }
+  let p = new Proxy({}, handler)
+  p.a = 1
+  p.b = undefined
+  console.log(p.a, p.b)
+  console.log('x' in p, p.x) */
+
+  /* let target = {}
+  let p = new Proxy(target, {})
+  p.a = 37
+  console.log(target.a) */
+
+  /*  let validator = {
+     set: function (obj, prop, value) {
+       if (prop === 'age') {
+         if (!Number.isInteger(value)) {
+           throw new TypeError('not number')
+         } else if (value > 200) {
+           throw new RangeError('invalid')
+         }
+       }
+       obj[prop] = value
+       return true
+     }
+   }
+   let p = new Proxy({}, validator)
+   p.age = 100
+   console.log(p.age)
+   p.age = 'young'
+   console.log(p.age)
+   p.age = 800
+   console.log(p.age) */
+
+  function extend(sup, base) {
+    var descriptor = Object.getOwnPropertyDescriptor(
+      base.prototype, "constructor"
+    );
+    base.prototype = Object.create(sup.prototype);
+    var handler = {
+      construct: function (target, args) {
+        var obj = Object.create(base.prototype);
+        this.apply(target, obj, args);
+        return obj;
+      },
+      apply: function (target, that, args) {
+        sup.apply(that, args);
+        base.apply(that, args);
+      }
+    };
+    var proxy = new Proxy(base, handler);
+    descriptor.value = proxy;
+    Object.defineProperty(base.prototype, "constructor", descriptor);
+    return proxy;
+  }
+
+  var Person = function (name) {
+    this.name = name
+  };
+
+  var Boy = extend(Person, function (name, age) {
+    this.age = age;
+  });
+
+  Boy.prototype.sex = "M";
+
+  var Peter = new Boy("Peter", 13);
+  console.log(Peter.sex);  // "M"
+  console.log(Peter.name); // "Peter"
+  console.log(Peter.age);  // 13
+
+</script>
+
+</html>

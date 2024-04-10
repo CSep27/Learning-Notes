@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <div id="main" data-x="hello">
+      Hello
+      <p>
+        999
+        <span>
+          98
+          <input type="text" id="name" />
+        </span>
+        <span>97</span>
+      </p>
+      Good
+      <p>888</p>
+      world
+      <input type="text" id="name" />
+    </div>
+    <script>
+      /* 自己实现最终版 将一个 html 字符串变成树的形式 */
+      // 测试复杂情况
+      /* let template = `<div id="main" data-x="hello">
+         Hello
+         <p>
+           999
+           <span>
+             98
+             <input type="text" id="name" />
+           </span>
+           <span>97</span>
+         </p>
+         Good
+         <p>888</p>
+         world
+         <input type="text" id="name" />
+       </div>`; */
+      // 测试 span 没有正确关闭时 打印警告
+      let template = `<div id="main" data-x="hello">
+         Hello
+         <p>
+          888
+          <span>
+        </p>
+         world
+         <input type="text"
+               id="name" />
+       </div>`;
+
+      const parseHtml = (html) => {
+        let root; // 存放整个结果的对象
+        let element; // 存放当前处理的对象
+
+        // stack 结合 currentParent 指针实现层级关系
+        const stack = []; // 栈，先进后出
+        let currentParent; // 当前父级元素指针
+
+        let index; // 指针指向当前处理的字符串位置，如果需要记录位置信息，就需要用到
+
+        const startTagStartReg = /^<([a-z]+)/;
+        const startTagCloseReg = /^\s*(\/?)>/;
+        const endTagReg = /^<\/([a-z]+)>/;
+        const tagReg = /[a-z]+/;
+        const attrReg = /\s*([a-z]+(?:-[a-z]+)*)="(\w+)"\s*/;
+
+        const advance = (n) => {
+          index += n;
+          html = html.substring(n);
+        };
+        const parseStartTag = () => {
+          const start = html.match(startTagStartReg);
+          if (start) {
+            const match = {
+              tagName: start[1],
+              attrs: [],
+              children: [],
+            };
+            advance(start[0].length);
+            let end, attr;
+            while (
+              !(end = html.match(startTagCloseReg)) &&
+              (attr = html.match(attrReg))
+            ) {
+              advance(attr[0].length);
+              match.attrs.push(attr);
+            }
+            if (end) {
+              match.selfCloseTag = !!end[1];
+              advance(end[0].length);
+              return match;
+            }
+          }
+        };
+        const createAstElement = (tagName, attrs, selfCloseTag, parent) => ({
+          tagName,
+          attrs,
+          selfCloseTag,
+          parent,
+          children: [],
+        });
+        const handleStartTag = (match) => {
+          const attrs = {};
+          for (let index = 0; index < match.attrs.length; index++) {
+            const item = match.attrs[index];
+            attrs[item[1]] = item[2];
+          }
+          element = createAstElement(
+            match.tagName,
+            attrs,
+            match.selfCloseTag,
+            currentParent
+          );
+          // 处理第一个元素时，没有root，将当前element赋值给root
+          // 最后需要的就是root，因为所有的element之间都会通过对象的parent和children相互关联
+          if (!root) {
+            root = element;
+          }
+          // 第一次，currentParent没有值，是根元素
+          if (currentParent) {
+            // currentParent有值了
+            // 把当前element放入currentParent.children
+            // element.parent指向currentParent
+            // 这里有一个问题，就是如何保证currentParent关系是对的
+            // 就是要在处理结束标签时，将currentParent指向正确的位置
+            currentParent.children.push(element);
+            element.parent = currentParent;
+          }
+          // 如果是非自闭合标签，才会成为父级元素
+          if (!element.selfCloseTag) {
+            // 在开始标签中，将element赋值给 currentParent，并且入栈
+            currentParent = element;
+            stack.push(element);
+          }
+        };
+        // 在处理结束标签时，如果在stack中从后往前找到了对应的起始标签，说明该标签处理完毕了，将该标签出栈
+        // currentParent指向上一个标签，后面如果再遇到起始标签，那么就是currentParent的下一个子元素
+        // 这样currentParent的关系就是对的了
+        const parseEndTag = (match) => {
+          // open的元素出栈
+          const tagName = match[1];
+          // 这里直接用pos，不需要再声明一个循环体用的变量了
+          let pos;
+          for (pos = stack.length - 1; pos >= 0; pos--) {
+            if (stack[pos].tagName === tagName) {
+              break;
+            }
+          }
+          if (pos >= 0) {
+            for (let i = stack.length - 1; i >= pos; i--) {
+              if (i > pos || !tagName) {
+                console.warn(
+                  `tag <${stack[i].tagName}> has no matching end tag.`
+                );
+              }
+            }
+            // 删除掉最后的空节点
+            const item = stack[stack.length - 1];
+            const lastNode = item.children[item.children.length - 1];
+            if (lastNode && lastNode.type === 3 && lastNode.text === "") {
+              item.children.pop();
+            }
+            // pop stack 当前标签闭合了，处理完毕了，出栈
+            // 在源码中，从stack.length - 1到pos进行了循环，是为了处理标签没有正常关闭的异常情况，
+            // 调用了options.end方法，在该方法中每次出栈一个元素
+            // stack.length -= 1;
+            // 如果不止一个需要出栈的，通过如下方式出栈
+            stack.length = pos;
+            // currentParent 指向此时的最后一个标签
+            // 下一个再需要处理的标签就是currentParent的子元素，这样层级关系就正确了
+            currentParent = stack[stack.length - 1];
+          }
+          advance(match[0].length);
+        };
+
+        while (html) {
+          const textEnd = html.indexOf("<");
+          if (textEnd === 0) {
+            // 先处理结束标签的开始符
+            const endTagMatch = html.match(endTagReg);
+            if (endTagMatch) {
+              parseEndTag(endTagMatch);
+              continue;
+            }
+            // 开始标签的开始符
+            const startTagMatch = parseStartTag();
+            if (startTagMatch) {
+              handleStartTag(startTagMatch);
+              continue;
+            }
+          }
+          // 处理文本
+          if (textEnd >= 0) {
+            // 源码里增加处理了文本中包含<符号的情况
+            const text = html.slice(0, textEnd);
+            advance(text.length);
+            if (!currentParent) {
+              return;
+            }
+            currentParent.children.push({
+              type: 3, // 文本节点
+              text: text.trim(), // 去掉两边的空格
+            });
+          }
+        }
+        return root;
+      };
+
+      const ast = parseHtml(template);
+      console.log(ast);
+
+      /*
+       题目里对文本节点处理太简单了，实际文本节点可能多次穿插，
+       因此应当像源码中一样，将每个文本节点都当做一个节点，按照顺序放入children数组
+       */
+      /*
+
+      源码中对p标签进行了特殊处理，因为p标签里面不能包含p标签，如果写了p标签包含关系，那么实际会渲染到外层，导致最终的结果不对
+      */
+    </script>
+  </body>
+</html>

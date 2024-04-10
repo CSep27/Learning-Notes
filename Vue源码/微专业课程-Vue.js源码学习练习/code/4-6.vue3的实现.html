@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <button id="add">add</button>
+  <div id="app"></div>
+</body>
+<script>
+  let active
+
+  let effect = (fn, options = {}) => {
+    // 为什么要增加一个_effect函数
+    // 因为需要给_effect增加属性
+    // 也可以直接给fn增加，但是由于引用类型的原因，会对fn函数造成污染
+    let _effect = (...args) => {
+      try {
+        active = _effect
+        return fn(...args)
+      } finally {
+        active = null
+      }
+    }
+
+    _effect.options = options
+    _effect.deps = [] // effect和dep的关系-1
+    return _effect
+  }
+
+  let cleanUpEffect = (effect) => {
+    // 清除依赖
+    // 需要反向查找effect被哪些dep依赖了
+    // 在effect上添加[] 建立双向索引
+    const { deps } = effect
+    console.log(deps)
+    console.log(effect)
+    if (deps.length) {
+      for (let i = 0; i < deps.length; i++) {
+        deps[i].delete(effect)
+      }
+    }
+  }
+
+  let watchEffect = (cb) => {
+    /* active = cb
+    active()
+    active = null */
+    let runner = effect(cb)
+    runner()
+
+    return () => {
+      cleanUpEffect(runner)
+    }
+  }
+
+  let nextTick = (cb) => Promise.resolve().then(cb)
+
+  // 队列
+  let queue = []
+
+  // 添加队列
+  let queueJob = (job) => {
+    if (!queue.includes(job)) {
+      queue.push(job)
+      // 添加之后，将执行放到异步任务中
+      nextTick(flushJob)
+    }
+  }
+
+  // 执行队列
+  let flushJob = () => {
+    while (queue.length > 0) {
+      let job = queue.shift()
+      job && job()
+    }
+  }
+
+
+  let Dep = class {
+    constructor() {
+      // 存放收集的active
+      this.deps = new Set()
+    }
+    // 依赖收集
+    depend() {
+      if (active) {
+        this.deps.add(active)
+        active.deps.push(this.deps) // effect和dep的关系-2
+      }
+    }
+    // 触发
+    notify() {
+      this.deps.forEach(dep => queueJob(dep))
+      this.deps.forEach(dep => {
+        dep.options && dep.options.schedular && dep.options.schedular()
+      })
+    }
+  }
+
+  // 提取ref和set的重复代码
+  let createReactive = (target, prop, initValue) => {
+    let dep = new Dep()
+    return new Proxy(target, {
+      get(target, prop) {
+        dep.depend()
+        return Reflect.get(target, prop)
+      },
+      set(target, prop, value) {
+        dep.notify()
+        return Reflect.set(target, prop, value)
+      }
+    })
+  }
+
+  let ref = (initValue) => createReactive({}, 'value', initValue)
+
+  const set = (target, prop, initValue) => createReactive(target, prop, initValue)
+
+  let computed = (fn) => {
+    let value
+    let dirty = true // 为true表明依赖的变量发生了变化，此时需要重新计算
+    let runner = effect(fn, {
+      schedular() {
+        if (!dirty) {
+          dirty = true
+        }
+      }
+    })
+    return {
+      get value() {
+        if (dirty) {
+          // 何时将dirty重置为true，当执行fn后
+          // 因此需要通过配置回调函数，在执行fn后将dirty重置为true
+          // value = fn() 
+          value = runner()
+          dirty = false
+        }
+        return value
+      }
+    }
+  }
+
+  let watch = (source, cb, options = {}) => {
+    const { immediate } = options
+    const getter = () => {
+      return source()
+    }
+    // 将函数添加到count的依赖上去，当count变化时
+    let oldValue
+    const runner = effect(getter, {
+      schedular: () => applyCb()
+    })
+
+    const applyCb = () => {
+      let newValue = runner()
+      if (newValue !== oldValue) {
+        cb(newValue, oldValue)
+        oldValue = newValue
+      }
+    }
+
+    if (immediate) {
+      applyCb()
+    } else {
+      oldValue = runner()
+    }
+  }
+
+  // let count = ref(0) // 对象新增属性
+  let computedValue = computed(() => count.value + 3)
+  let arrValue = 0
+  let count = set([], 1, 0)
+  document.getElementById('add').addEventListener('click', function () {
+    // count.value++
+    // count.value 添加了响应式处理
+    // 当用Object.defineProperty时，count.v新增属性，不会有响应式变化
+    // 通过Vue.set()实现监听属性变化
+
+    // 例：对象新增属性
+    /* if (!count.v) {
+      count.v = 0
+    }
+    count.v++ */
+
+    // 例：数组增加元素
+    arrValue++
+    count.push(arrValue)
+  })
+
+  let str
+  let stop = watchEffect(() => {
+    // str = `hello ${count.value} ${computedValue.value}`
+    str = `hello ${count.join(',')}`
+    // str = `hello ${count.v}` // 对象新增属性
+    document.getElementById('app').innerText = str
+  })
+
+  watch(
+    () => count.value,
+    (newValue, oldValue) => {
+      console.log(newValue, oldValue)
+    },
+    { immediate: true }
+  )
+
+  /* setTimeout(() => {
+    stop()
+  }, 3000) */
+
+  /*
+  let x = computed(() => count.value + 3)
+  watch(() => count.value, (currentValue, preValue) => {}, {deep, immediate})
+  stop = watchEffect(() => count.value + 3)
+  执行stop时，停止watch
+  */
+
+  // vue3 使用proxy可以监听到对象上属性的变化
+</script>
+
+</html>

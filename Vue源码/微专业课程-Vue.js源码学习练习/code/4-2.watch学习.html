@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <button id="add">add</button>
+  <div id="app"></div>
+</body>
+<script>
+  let active
+
+  let effect = (fn, options = {}) => {
+    let _effect = (...args) => {
+      try {
+        active = _effect
+        return fn(...args)
+      } finally {
+        active = null
+      }
+    }
+    _effect.options = options
+    return _effect
+  }
+
+  let watchEffect = (cb) => {
+    /* active = cb
+    active()
+    active = null */
+    let runner = effect(cb)
+    runner()
+  }
+
+  let nextTick = (cb) => Promise.resolve().then(cb)
+
+  // 队列
+  let queue = []
+
+  // 添加队列
+  let queueJob = (job) => {
+    if (!queue.includes(job)) {
+      queue.push(job)
+      // 添加之后，将执行放到异步任务中
+      nextTick(flushJob)
+    }
+  }
+
+  // 执行队列
+  let flushJob = () => {
+    while (queue.length > 0) {
+      let job = queue.shift()
+      job && job()
+    }
+  }
+
+
+  let Dep = class {
+    constructor() {
+      // 存放收集的active
+      this.deps = new Set()
+    }
+    // 依赖收集
+    depend() {
+      if (active) {
+        this.deps.add(active)
+      }
+    }
+    // 触发
+    notify() {
+      this.deps.forEach(dep => queueJob(dep))
+      this.deps.forEach(dep => {
+        dep.options && dep.options.schedular && dep.options.schedular()
+      })
+    }
+  }
+
+  let ref = initValue => {
+    let value = initValue
+    let dep = new Dep()
+    return Object.defineProperty({}, 'value', {
+      get() {
+        dep.depend()
+        return value
+      },
+      set(newValue) {
+        value = newValue
+        dep.notify()
+      }
+    })
+  }
+
+  let computed = (fn) => {
+    let value
+    let dirty = true // 为true表明依赖的变量发生了变化，此时需要重新计算
+    let runner = effect(fn, {
+      schedular () {
+        if (!dirty) {
+          dirty = true
+        }
+      }
+    })
+    return {
+      get value () {
+        if (dirty) {
+          // 何时将dirty重置为true，当执行fn后
+          // 因此需要通过配置回调函数，在执行fn后将dirty重置为true
+          // value = fn() 
+          value = runner()
+          dirty = false
+        }
+        return value
+      }
+    }
+  }
+
+  let watch = (source, cb, options ={}) => {
+    const {immediate} = options
+    const getter = () => {
+      return source()
+    }
+    // 将函数添加到count的依赖上去，当count变化时
+    let oldValue
+    const runner = effect(getter, {
+      schedular: () => applyCb()
+    })
+
+    const applyCb = () => {
+      let newValue = runner()
+      if (newValue !== oldValue) {
+        cb(newValue, oldValue)
+        oldValue = newValue
+      }
+    }
+
+    if (immediate) {
+      applyCb()
+    } else {
+      oldValue = runner()
+    }
+  }
+
+  let count = ref(0)
+  let computedValue = computed(() => count.value + 3)
+  document.getElementById('add').addEventListener('click', function () {
+    count.value++
+  })
+
+  let str
+  watchEffect(() => {
+    str = `hello ${count.value} ${computedValue.value}`
+    document.getElementById('app').innerText = str
+  })
+
+  watch(
+    () => count.value,
+    (newValue, oldValue) => {
+      console.log(newValue, oldValue)
+    },
+    {immediate: true}
+  )
+
+  /* 
+  let x = computed(() => count.value + 3)
+  watch(() => count.value, (currentValue, preValue) => {}, {deep, immediate})
+  watchEffect(() => count.value + 3) */
+</script>
+
+</html>

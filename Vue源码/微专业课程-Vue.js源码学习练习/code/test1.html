@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+    <style>
+      /*.container {
+			position: relative;
+		}
+		.img {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}*/
+      /*.container {
+			display: flex;
+			align-content: center;
+			justify-content: center;
+		}
+		.img {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}*/
+      .container {
+        width: 100px;
+        height: 100px;
+        padding: 20px;
+        margin: 20px;
+        border: 1px solid #000;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" id="container">
+      <img src="" alt="" class="img" />
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+  <script>
+    // let container = document.getElementById('container')
+    // console.log(container.style.width)
+    // console.log(container.style.height)
+    // console.log($('.container').width())
+    // console.log($('.container').height())
+    // 不重复的字符串的个数 每个字符串出现的次数
+    // var arr = ['abc', 'abc', 'yh']
+
+    // let obj = {}
+    // for (let i = 0; i < arr.length; i++) {
+    // 	let item = arr[i]
+    // 	if (obj[item]) {
+    // 		obj[item]++
+    // 	} else {
+    // 		obj[item] = 1
+    // 	}
+    // }
+
+    // let num = 0
+    // for (let k in obj) {
+    // 	console.log(`${obj[k]}出现的次数为${k}次`)
+    // 	num++
+    // }
+    // console.log('不重复的字符串的个数', num)
+
+    // function reverseStr(str) {
+    // 	if (typeof str !== 'string') return
+    // 	return str.split('').reverse().join('')
+    // }
+
+    (function () {
+      let a = 1;
+      fn();
+      function fn() {
+        a += 1;
+        console.log(a);
+        return a;
+      }
+      console.log(a);
+      console.log(fn() + 1);
+    })();
+  </script>
+</html>

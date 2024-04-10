@@ -1,0 +1,10 @@
+- nvm 配置文件地址：C:\Users\用户\AppData\Roaming\nvm\settings.txt
+- 通过命令行配置 Proxy 时，密码中的特殊字符可能会导致设置不成功，此时直接在配置文件中修改
+- `nvm install v18.17.0` 安装指定版本 node
+- `nvm list available` 查看可以安装的 node 版本
+- `nvm ls` 查看已安装的 node 版本
+- `nvm use v18.17.0` 使用指定的 node 版本
+- `nvm proxy url` 设置代理
+- `nvm node_mirror url` 设置 node 镜像地址
+- `nvm npm_mirror url` 设置 npm 镜像地址
+- 如果镜像地址是外网地址，就需要同时设置镜像地址和代理地址，通过代理访问外网

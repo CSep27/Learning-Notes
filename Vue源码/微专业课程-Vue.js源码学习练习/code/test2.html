@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    // let x;
+    // let y;
+    // let f = n => n * 100 + 100;
+
+    /* let active;
+
+let watch = function(cb) {
+  active = cb;
+  active();
+  active = null;
+};
+
+let queue = [];
+let nextTick = cb => {
+  return Promise.resolve().then(cb);
+};
+
+let flushJobs = () => {
+  let job;
+
+  while (queue.length > 0) {
+    job = queue.shift();
+    job && job();
+  }
+};
+
+let queueJob = dep => {
+  if (!queue.includes(dep)) {
+    queue.push(dep);
+    nextTick(flushJobs);
+  }
+};
+
+class Dep {
+  constructor() {
+    this.deps = new Set();
+  }
+  depend() {
+    if (active) {
+      this.deps.add(active);
+    }
+  }
+  notify() {
+    this.deps.forEach(dep => queueJob(dep));
+  }
+}
+
+let ref = initValue => {
+  let value = initValue;
+  let dep = new Dep();
+
+  return Object.defineProperty({}, "value", {
+    get() {
+      dep.depend();
+      return value;
+    },
+    set(newValue) {
+      value = newValue;
+      dep.notify();
+    }
+  });
+};
+
+let x = ref(1);
+let y = ref(1);
+let z = ref(1);
+
+let str;
+watch(() => {
+  str = `hello ${x.value} ${y.value} ${z.value}`;
+  console.log(1, str);
+  document.write(str);
+});
+
+x.value = 2;
+y.value = 2;
+z.value = 2;
+
+nextTick(() => {
+  console.log(x.value);
+  console.log(2, str);
+  console.log(x.value);
+}); */
+
+    /* let _effect = (fn, ...args) => {
+  try {
+    console.log('_effect 执行')
+    fn(...args)
+  } finally {
+    // 无论是否抛出异常最后finally都会执行
+    console.log('finally', ...args)
+  }
+}
+
+let r = _effect((x, y) => {
+  console.log('fn执行')
+  return x + y
+}, 1,2)
+
+console.log(r) */
+
+    var proxy = new Proxy(
+      {},
+      {
+        get(target, prop) {
+          console.log("get");
+          return 78;
+          // Reflect.get(target, prop)
+        },
+        set(target, prop, value) {
+          console.log("set");
+          return value;
+        },
+      }
+    );
+
+    const Fn = function (a, b) {
+      this.a = a;
+      this.b = b;
+    };
+    Fn.extend = function (obj) {
+      console.log(this);
+    };
+    Fn.extend({ a: 1 });
+  </script>
+</html>
