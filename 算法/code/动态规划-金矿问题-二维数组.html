@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const fn2 = (w, g, p) => {
+        // JS无法直接声明二维数组，先创建二维数组
+        const resultTable = new Array(g.length + 1);
+        for (let i = 0; i < resultTable.length; i++) {
+          resultTable[i] = [];
+          for (let j = 0; j < w + 1; j++) {
+            resultTable[i][j] = 0;
+          }
+        }
+        console.log(resultTable);
+        // i 对应 n 金矿数量
+        // j 对应 w 工人数量
+        // 这样处理逻辑只要替换解法1中对应的变量即可
+        for (let i = 1; i < resultTable.length; i++) {
+          for (let j = 1; j < resultTable[i].length; j++) {
+            if (j < p[i - 1]) {
+              resultTable[i][j] = resultTable[i - 1][j];
+            } else {
+              resultTable[i][j] = Math.max(
+                resultTable[i - 1][j],
+                g[i - 1] + resultTable[i - 1][j - p[i - 1]]
+              );
+            }
+          }
+        }
+        console.log(resultTable);
+        return resultTable[resultTable.length - 1][w];
+      };
+      const w = 10; // 工人数
+      const g = [200, 300, 350, 400, 500]; // 金矿价值
+      const p = [3, 4, 3, 5, 5]; // 金矿需要的人数
+      console.log(fn2(w, g, p)); // 900
+    </script>
+  </body>
+</html>
