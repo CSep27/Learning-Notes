@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const fn3 = (w, g, p) => {
+        // 创建一个w+1长度的数组，赋初始值为0
+        const resultTable = new Array(w + 1);
+        for (let i = 0; i < resultTable.length; i++) {
+          resultTable[i] = 0;
+        }
+        console.log(resultTable);
+        for (let i = 1; i <= g.length; i++) {
+          // 从后往前
+          for (let j = w; j >= 1; j--) {
+            if (j >= p[i - 1]) {
+              resultTable[j] = Math.max(
+                resultTable[j],
+                g[i - 1] + resultTable[j - p[i - 1]]
+              );
+            }
+          }
+        }
+        console.log(resultTable);
+        return resultTable[w];
+      };
+      const w = 5; // 背包容纳的重量
+      const g = [3, 4, 5, 6]; // 物品价值
+      const p = [1, 2, 3, 4]; // 物品重量
+      console.log(fn3(w, g, p)); // 9
+    </script>
+  </body>
+</html>
