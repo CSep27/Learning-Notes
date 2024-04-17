@@ -7,12 +7,9 @@
   </head>
   <body>
     <script>
-      const fn2 = (w, g, p) => {
+      const fn3 = (w, g, p) => {
         // 创建一个w+1长度的数组，赋初始值为0
-        const resultTable = new Array(w + 1);
-        for (let i = 0; i < resultTable.length; i++) {
-          resultTable[i] = 0;
-        }
+        const resultTable = new Array(w + 1).fill(0);
         console.log(resultTable);
         for (let i = 1; i <= g.length; i++) {
           // 从后往前
@@ -31,7 +28,7 @@
       const w = 10; // 工人数
       const g = [200, 300, 350, 400, 500]; // 金矿价值
       const p = [3, 4, 3, 5, 5]; // 金矿需要的人数
-      console.log(fn2(w, g, p)); // 900
+      console.log(fn3(w, g, p)); // 900
     </script>
   </body>
 </html>
