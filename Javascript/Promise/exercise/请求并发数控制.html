@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 
+      实现如下的函数：可以批量请求数据，所有的URL地址在urls参数中，
+      同时可以通过max参数控制请求的并发度，当所有请求结束之后，
+      需要执行callback回调函数，发请求的函数直接使用fetch。
+     -->
+    <script>
+      /* 
+      1. 首先理解并发度，假设为3，就是请求通道中最多只能容纳三个请求在请求中状态
+      如果没有请求的状态为完成，释放通道，那么下一个请求就不能发出。
+      当某个请求完成了，就可以释放通道，发出下一个请求。
+      请求完成的顺序是不要求的
+      2. 所有请求结束后，执行回调函数。
+      把所有请求整个过程看做一个异步操作，放在new Promise里，等到拿到所有请求结果，再resolve
+      3. 思路
+      len 要处理的总数量
+      index 当前处理的请求序号
+      counter 返回结果的序号
+      max 并发数
+      while循环的条件就是：
+      index < len 并且
+      max > 0 
+      在循环中执行请求操作
+      请求完成的then函数中，判断 counter === len ，此时说明处理完毕，那么可以resolve了
+      否则，继续执行请求操作      
+      */
+      let result = [];
+      async function sendRequest(urls, max, callback) {
+        new Promise((resolve) => {
+          // 总数量
+          const len = urls.length;
+          // 当前处理的请求序号
+          let index = 0;
+          // 返回结果的序号
+          let counter = 0;
+          const start = async () => {
+            // 当前处理的请求序号 小于 总数量
+            // max 当前并发数 需要大于0
+            while (index < len && max > 0) {
+              // 占用通道
+              // 发送出去一个就要减一
+              max--;
+              console.log(index, "start");
+              fetch(urls[index])
+                .then((response) => response.json())
+                .then((json) => {
+                  result.push(json);
+                  // 释放通道
+                  // 有一个异步操作返回了结果
+                  // 那么此时就有一个通道被释放出来
+                  // max加一
+                  max++;
+                  // 结果加一
+                  counter++;
+                  if (counter === len) {
+                    // 结果数量等于全部要处理的数量时
+                    // 全部异步操作结束
+                    resolve();
+                  } else {
+                    // 否则继续执行start函数
+                    // 发送下一个请求
+                    start();
+                  }
+                });
+              // 处理完一个序号加一
+              index++;
+            }
+          };
+          start();
+        }).then(() => {
+          callback();
+          console.log(result);
+        });
+      }
+
+      sendRequest(
+        [
+          "http://localhost:3000/users/test1",
+          "http://localhost:3000/users/test2",
+          "http://localhost:3000/users/test3",
+          "http://localhost:3000/users/test4",
+          "http://localhost:3000/users/test5",
+          "http://localhost:3000/users/test6",
+        ],
+        3,
+        () => {
+          console.log("所有请求结束");
+        }
+      );
+    </script>
+  </body>
+</html>

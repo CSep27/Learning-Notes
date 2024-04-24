@@ -176,3 +176,32 @@ p {
 
 </html>
 ```
+
+# CSS 实现宽度与高度相同
+
+盒子宽度设置百分比，盒子的高度与宽度相同，是一个正方形。
+
+## 使用伪元素实现
+
+盒子宽度是父元素宽度的 25%，在盒子内部插入一个内容为空字符串的伪元素，display 设置为与盒子本身一致，再设置 padding-top 或者 padding-bottom 为 100%。
+
+```css
+.square {
+  width: 25%;
+  background-color: aqua;
+}
+.square::before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+```
+
+资料：https://www.zhihu.com/question/31753528
+
+注意：子元素 和伪元素 display 要一致，否则会出现轻微的像素差别。在做布局题目时，将子元素 display 设置为 block，伪元素设置为 inline-block 时，出现了高度多了几像素。
+
+[伪元素](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-elements)
+[伪类](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-classes)
+
+[CSS 原生嵌套语法来了](https://zhuanlan.zhihu.com/p/603168988)
