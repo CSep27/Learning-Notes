@@ -36,7 +36,7 @@ Virtual DOM 是分层思想的一种体现
 
 - 参考文章：[详解 Vue 的 Diff 算法](https://juejin.im/post/5affd01551882542c83301da#heading-8)
 
-```
+```js
   updateChildren(parentElm, oldCh, newCh) {
     let oldStartIdx = 0, newStartIdx = 0
     let oldEndIdx = oldCh.length - 1
