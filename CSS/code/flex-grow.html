@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .container {
+        display: flex;
+        width: 500px;
+        height: 50px;
+      }
+      /* 
+      flex-grow 定义项目的放大比例，默认为 0，即如果存在剩余空间，也不放大。
+      首先计算剩余空间
+      总宽度500px，减去三个元素宽度剩余150px。
+      flex-grow设置的是放大的比例
+      按照flex-grow设置的比例，a放大150px的1/6，即25px，b和c依次类推
+      最终宽度
+      a 125px;
+      b 200px;
+      c 175px;      
+      */
+      .a {
+        width: 100px;
+        flex-grow: 1;
+      }
+      .b {
+        width: 150px;
+        flex-grow: 2;
+      }
+      .c {
+        width: 100px;
+        flex-grow: 3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="a">A</div>
+      <div class="b">B</div>
+      <div class="c">C</div>
+    </div>
+  </body>
+</html>
