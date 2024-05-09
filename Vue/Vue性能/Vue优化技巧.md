@@ -6,6 +6,8 @@
 
 [Akryum/vue-9-perf-secrets 代码地址](https://github.com/Akryum/vue-9-perf-secrets)
 
+[「前端进阶」高性能渲染十万条数据(时间分片)](https://juejin.cn/post/6844903938894872589) -时间分片思想
+
 使用`fps-indicator`库来获取页面的 fps
 
 # 性能指标
