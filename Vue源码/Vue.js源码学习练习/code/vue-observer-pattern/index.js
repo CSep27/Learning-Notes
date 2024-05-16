@@ -6,7 +6,6 @@ const data = {
 };
 observe(data);
 // 传入vm是为了获取到data，这里简化直接传data
-// 调用watch 内部new Watcher() 赋值Dep.target
 watch(data, "test", (newValue, oldValue) => {
   console.log(newValue, oldValue);
   console.log(data.test);

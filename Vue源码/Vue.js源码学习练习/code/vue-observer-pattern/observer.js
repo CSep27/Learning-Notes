@@ -23,6 +23,7 @@ function defineReactive(obj, key, val) {
         return;
       }
       val = newVal;
+      // 值更新了，通知观察者
       dep.notify();
     },
   });
@@ -31,7 +32,7 @@ function defineReactive(obj, key, val) {
 export class Observer {
   constructor(value) {
     this.value = value;
-    this.dep = new Dep();
+    this.dep = new Dep(); // 用到了吗？
     // this.vmCount = 0;
     // def(value, "__ob__", this);
     this.walk(value);
