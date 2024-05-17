@@ -129,3 +129,7 @@ Element.getBoundingClientRect() 方法返回一个 DOMRect 对象，其提供了
 - bottom 同 y+height 值，如果 height 是负值，就是 y
 - left 同 x 值，如果 width 是负值，就是 x+width
 - 所以 left、top 可以看做盒子左上角点的坐标，right、bottom 可以看做盒子右下角点的坐标
+
+# Object.isExtensible
+
+- 判断对象是否可扩展

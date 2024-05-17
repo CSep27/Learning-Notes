@@ -1,6 +1,68 @@
-看《深入浅出 Vue.js》后整理总结的知识点，待合并
+# 观察者——对象行为型模式
 
-# 设计模式
+《设计模式：可复用面向对象软件的基础》书中，观察者模式有两个别名：依赖（Dependents）、发布-订阅（Publish-Subscribe）
+
+## 意图
+
+定义对象间的一种一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都得到通知并被自动更新。
+
+## 举例解释
+
+有一个表格、一个柱状图、一个饼状图，有一份数据。这三个图都展示的是这个数据的统计内容。
+
+三个图对象互相并不知道对方的存在，所以可以单独使用。如果修改了数据的内容那么三个图的内容会立即更改。
+
+这说明这三个图对象，都依赖于数据对象。数据对象的任何状态变更都需要通知这三个对象。
+
+在初始时这三个对象需要订阅数据对象，以便于数据对象变更时通知这三个对象。
+
+观察者模式描述了如何建立这种关系。这一模式中的关键对象是目标和观察者。一个目标可以有任意数目的依赖他的观察者。
+
+## 参与者
+
+1. 目标 Subject
+
+- 目标知道他的观察者。可以有任意多个观察者观察同一个目标。
+- 提供注册和删除观察者对象的接口。
+  - Attach(Observer)
+  - Deattach(Observer)
+  - notify()
+
+2. 观察者 Observer
+
+- 为那些在目标发生改变时需获得通知的对象定义一个更新接口。
+  - update()
+
+3. 具体目标 ConcreteSubject
+
+- 将有关状态存入各 ConcreteObserver 对象。
+- 当他的状态发生改变时，向他的各个观察者发出通知。
+  - GetState()
+  - SetState()
+  - subjectState
+
+4. 具体观察者 ConcreteObserver
+
+- 维护一个指向对象的引用。
+- 存储有关状态，这些状态应与目标的状态保持一致。
+- 实现 Observer 更新接口，以使自身状态与目标的状态保持一致。
+  - observerState
+
+## 实现（部分）
+
+1. 谁触发更新
+   a. 由目标对象的<状态设定操作>在改变目标对象的状态后，自动调用 Notify。优点是，客户不需要记住要在目标对象上调用。缺点是多个连续的操作会产生多次连续的更新。可能效率较低。
+
+2. 避免特定于观察者的更新协议——推/拉模型
+   a. 推模型：目标向观察者发送关于改变的详细信息。不管他们需要与否。
+   b. 拉模型：目标除最小通知外什么也不发出。在此之后由观察者显式的向目标询问细节。
+
+3. 封装复杂的更新语义
+   当目标和观察者间的依赖关系特别复杂时，可能需要一个维护这些关系的对象。我们称这样的对象为更改管理器（ChangeMangager）。它的目的是尽量减少观察者反映其目标的状态变化所需的工作量。例如，如果一个操作涉及到对几个相互依赖的目标进行改动。就必须保证仅在**所有的**目标都已更改完毕后才一次性的通知他们的观察者。而不是每个目标都通知观察者。
+
+# 观察者模式与发布订阅模式区别
+
+《深入浅出 Vue.js》书中以及在其他地方看到说这两种模式有区别
 
 ## 观察者模式
 
@@ -21,15 +83,7 @@
 - 订阅者只需告诉 Broker，我要订阅 topic 是 AAA 的消息；
 - 于是，当 Broker 收到发布者发过来消息，并且 topic 是 AAA 时，就会把消息推送给订阅了 topic 是 AAA 的订阅者。当然也有可能是订阅者自己过来拉取，看具体实现。
 
-# 知识点
-
-## Object.isExtensible
-
-- 判断对象是否可扩展
-
-# Vue 源码
-
-- 使用的是观察者模式
+# Vue 观察者模式
 
 1. 观察对象 Subject 通过自己内部的通知函数，调用所有观察者列表中观察者对应的回调函数，达到通知观察者的目的。
 2. 观察者（Observer）通过调用观察者对象（Subject）中的添加方法，把自己的回调函数传入
@@ -66,7 +120,7 @@ export default class Dep {
     this.id = uid++;
     this.subs = [];
   }
-  // 被观察者提供的方法，用于watcher调用，建立依赖关系
+  // 给观察者提供的方法，用于watcher调用，建立依赖关系
   // 添加观察者
   addSub(sub: Watcher) {
     this.subs.push(sub);
@@ -654,5 +708,89 @@ function dependArray(value: Array<any>) {
       dependArray(e);
     }
   }
+}
+```
+
+## 总结
+
+普通情况下，数据 data 是目标，视图是观察者，data 变化，通知视图变化。
+
+初始化时，建立目标和观察者的联系，用到了三个类，Dep Observer Watcher。
+
+- Dep 用于管理目标，提供接口方法
+- Observer 主要用 data 变成响应式
+- Watcher 用于管理观察者，提供接口方法
+
+除了视图是观察者，搜索源码能看到，`new Watcher()`出现在三个地方：
+
+1. mount => mountComponent => `new Watcher()` isRenderWatcher = true
+   是渲染 watcher。挂载时才需要创建，因为挂载意味着有视图，也就是需要渲染了。
+2. initComputed => watchers[key] = new Watcher()
+   给 computed 属性创建内部 watcher，因为 computed 属性其实就是观察内部依赖的目标有没有变化，如果变化了，computed 属性就要变化。如下，观察 a 和 b（目标），变化了，则需要通知 countNum 变化
+   ```js
+   computed: {
+     countNum() {
+       return this.a + this.b;
+     }
+   }
+   ```
+3. Vue.prototype.$watch => const watcher = new Watcher()
+   也就是用户手动添加 watcher
+   ```js
+   watch: {
+      message(newValue, oldValue) {
+        console.log(newValue, oldValue);
+      }
+   }
+   ```
+
+---
+
+目标初始化过程：
+
+initData 方法中 => 执行 observe 方法`const ob = observe(data)`，返回的 ob 是 Observer 类的实例 => 在 observe 方法中执行了`new Observer(value)` => 实例化 Observer 类会调用 defineReactive 方法 => defineReactive 方法执行时，1. `new Dep()`；2. 调用 defineProperty（get set）=> get 中调用了 dep.depend 收集依赖，set 中调用了 dep.notify 触发更新
+
+---
+
+观察者初始化过程：
+
+mount => mountComponent => `new Watcher()` => `this.value = this.get()` => 1. `pushTarget(this)`把当前 watcher 存入了 targetStack 栈中；2. 获取 data 当前的值存储在 watcher 的 value 中 => 触发了 defineProperty 的 get 函数 => 执行`dep.depend()`，目标 dep 的 subs 存入了当前观察者，观察者 watcher 的 deps 里存入了当前的目标 dep，相互之间建立了联系
+
+---
+
+更改数据后触发 setter，通知视图（渲染 watcher）更新过程：
+
+在 setter 函数中调用 Dep.notify => Watcher.update => 需要在微任务里执行，中间封装了很多方法，用 Promise.then => flushSchedulerQueue => Watcher.run => Watcher.get => this.getter => expOrFn 也就是 watcher.expression => `vm._update(vm._render(), hydrating);` 就是视图更新的方法
+
+`vm._render()` => 内部调用 render 方法生成 vnode：`vnode = render.call(vm._renderProxy, vm.$createElement);` => 生成的 vnode 作为`vm._update`的参数 => `vm._update`内部调用 `vm.$el = vm.__patch__(prevVnode, vnode);` => 进行新旧 vnode 比较之后返回`function patch(oldVnode, vnode, hydrating, removeOnly)` => 最终返回`vm.$el`，也就是实际的 DOM 元素
+
+```js
+// Watcher实例
+/* const watcher = {
+  depIds: Set{},
+  deps: [Dep, Dep],
+  newDepIds: Set{},
+  newDeps: [Dep, Dep],
+  expression: 'function () {\n      vm._update(vm._render(), hydrating);\n    }'
+} */
+
+Watcher.prototype.run = function () {
+  if (this.active) {
+    var value = this.get();
+  }
+};
+Watcher.prototype.get = function () {
+  pushTarget(this);
+  var value;
+  var vm = this.vm;
+  try {
+    value = this.getter.call(vm, vm);
+  } catch (e) {}
+};
+// 在watcher构造函数中，也就是初始化时定义了 this.getter
+if (typeof expOrFn === "function") {
+  this.getter = expOrFn;
+} else {
+  this.getter = parsePath(expOrFn);
 }
 ```
