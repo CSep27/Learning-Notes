@@ -133,3 +133,15 @@ Element.getBoundingClientRect() 方法返回一个 DOMRect 对象，其提供了
 # Object.isExtensible
 
 - 判断对象是否可扩展
+
+# 右移（>>）
+
+右移运算符（>>）将一个操作数的二进制表示形式向右移动指定位数，该操作数可以是数值或者 BigInt 类型。右边移出位被丢弃，左边移出的空位补符号位（最左边那位）。
+
+右移 1 位`num >> 1`，效果相当于`Math.floor(num / 2)`
+
+```js
+const num = 5;
+num >> 1; // 2
+Math.floor(num / 2); // 2
+```
