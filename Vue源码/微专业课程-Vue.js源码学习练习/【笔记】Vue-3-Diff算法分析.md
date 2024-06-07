@@ -1,4 +1,4 @@
-![diff.jpeg](/img/bVbJqK6)
+![diff.jpeg](./images/diff.jpeg)
 
 ### Virtual DOM
 
@@ -10,7 +10,7 @@
 Virtual DOM 是分层思想的一种体现
 
 - 框架将 DOM 抽象成 Virtual DOM 后可以应用在各个终端
-  ![Virtual DOM.jpeg](/img/bVbJjsX)
+  ![Virtual DOM.jpeg](./images/virtual-DOM.jpeg)
 
 ### Diff 策略
 
@@ -18,15 +18,15 @@ Virtual DOM 是分层思想的一种体现
 
 - 在 Web UI 中很少会出现 DOM 层级会因为交互而产生更新
 - 在新旧节点之间按层级进行 diff
-  ![tree-diff.jpeg](/img/bVbJjtd)
+  ![tree-diff.jpeg](./images/tree-diff.jpeg)
 
 2、 按类型进行 diff
 
 - 不同类型的节点之间往往差异很大，为了提升效率，只会对相同类型节点进行 diff
 - 不同类型会直接创建新类型节点，替换旧类型节点
 - 下图中，由上一层图形变为下一层图形。同层比较，第二列五角星和三角形不同，虽然子节点的两个五角星相同，但是也会直接将三个五角星直接销毁，替换为新的节点。
-  ![不同类型-1.jpeg](/img/bVbJjtj)
-  ![不同类型-2.jpeg](/img/bVbJjtn)
+  ![不同类型-1.jpeg](./images/不同类型-1.jpeg)
+  ![不同类型-2.jpeg](./images/不同类型-2.jpeg)
 
 3、 列表 Diff
 
@@ -126,7 +126,7 @@ Virtual DOM 是分层思想的一种体现
    如果 OldStart > OldEnd，说明旧节点已经遍历完，将多的新节点根据 index 添加到 DOM 中去
 
 - 例：如图，灰色表示 Virtual DOM 深色表示真实的 DOM
-  ![diff-2.jpeg](/img/bVbJqGg)
+  ![diff-2.jpeg](./images/diff-2.jpeg)
 - 四个指针
   - OldStartIdx 旧开始节点
   - OldEndIdx 和 旧结束节点
