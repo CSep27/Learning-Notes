@@ -2,7 +2,9 @@
 
 # JS 装箱
 
-当读取/调用一个基础类型时，会创建它的基础包装类型
+当读取/调用一个基础类型时，会创建它的基础包装类型。
+
+除了 null 和 undefined，**所有原始类型都有它们相应的对象包装类型**，这为处理原始值提供可用的方法。当在原始值上访问属性时，JavaScript 会自动将值包装到相应的包装对象中，并访问对象上的属性。
 
 ## 隐式装箱
 
@@ -57,14 +59,14 @@ objStr.sayHi(); // hello kitty
 
 ```js
 var objNum = new Number(64);
-var objStr = new String('64');
+var objStr = new String("64");
 console.log(typeof objNum); // object
 console.log(typeof objStr); // object
-# 拆箱
-console.log(typeof objNum.valueOf()); // number 基本的数字类型，想要的
-console.log(typeof objNum.toString()); // string 基本的字符类型，不想要的
-console.log(typeof objStr.valueOf()); // string 基本的数据类型，不想要的
-console.log(typeof objStr.toString()); // string 基本的数据类型，想要的
+// 拆箱
+console.log(typeof objNum.valueOf()); // number 基本的数字类型
+console.log(typeof objNum.toString()); // string 基本的字符类型
+console.log(typeof objStr.valueOf()); // string 基本的字符类型
+console.log(typeof objStr.toString()); // string 基本的字符类型
 ```
 
 ## Object.prototype.valueOf()
@@ -75,4 +77,10 @@ JavaScript 调用 valueOf 方法来将对象转换成基本类型值。你很少
 
 # 资料
 
+[JavaScript 中装箱和拆箱是什么？](https://blog.csdn.net/HuoYiHengYuan/article/details/104623046)
+
 待看：[JavaScript 数据类型和数据结构](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Data_structures)
+
+## undefined 类型
+
+从概念上讲，**undefined 表示值的缺失**，**null 表示对象的缺失**（这也可以说明 typeof null === "object" 的原因）。当某些东西没有值时，该语言通常默认为 undefined

@@ -2,6 +2,8 @@
 
 # 资料
 
+[MDN-内存管理](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Memory_management#data_structures_aiding_memory_management)
+
 [JS 中的栈内存堆内存](https://juejin.im/post/5d116a9df265da1bb47d717b)
 
 [你不知道的 JS（2）深入了解闭包](https://www.cnblogs.com/wuguanglin/p/closure.html)
@@ -9,6 +11,66 @@
 [堆栈与堆（Stack vs Heap）：有什么区别？](https://cloud.tencent.com/developer/article/2367306)
 
 [JS 中的内存管理](https://juejin.cn/post/6844903869525262349)
+
+# 内存管理
+
+## 内存生命周期
+
+不管什么程序语言，内存生命周期基本是一致的：
+
+1. 分配你所需要的内存
+2. 使用分配到的内存（读、写）
+3. 不需要时将其释放\归还
+
+## JavaScript 的内存分配
+
+### 值的初始化
+
+JavaScript 在定义变量时就完成了内存分配。
+
+```js
+var n = 123; // 给数值变量分配内存
+var s = "azerty"; // 给字符串分配内存
+
+var o = {
+  a: 1,
+  b: null,
+}; // 给对象及其包含的值分配内存
+```
+
+### 通过函数调用分配内存
+
+有些函数调用结果是分配对象内存：
+
+```js
+var d = new Date(); // 分配一个 Date 对象
+
+var e = document.createElement("div"); // 分配一个 DOM 元素
+```
+
+有些方法分配新变量或者新对象：
+
+```js
+var s = "azerty";
+var s2 = s.substr(0, 3); // s2 是一个新的字符串
+// 因为字符串是不变量，
+// JavaScript 可能决定不分配内存，
+// 只是存储了 [0-3] 的范围。
+
+var a = ["ouais ouais", "nan nan"];
+var a2 = ["generation", "nan nan"];
+var a3 = a.concat(a2);
+// 新数组有四个元素，是 a 连接 a2 的结果
+```
+
+## 垃圾回收算法
+
+1. 引用计数
+2. 标记清除 （2012 年起所有浏览器使用的新算法）
+   - 这个算法假定设置一个叫做根（root）的对象（在 Javascript 里，根是全局对象）。
+   - 垃圾回收器将定期从根开始，找所有从根开始引用的对象，然后找这些对象引用的对象……
+   - 从根开始，垃圾回收器将找到所有可以获得的对象和收集所有不能获得的对象。
+   - 所有不能获得的对象即需要清除的对象。
 
 # 栈和堆
 
@@ -47,6 +109,8 @@ JS 的内存空间分为栈(stack)、堆(heap)、池(一般也会归类为栈中
 栈内存中变量一般在它的当前执行环境结束就会被销毁被垃圾回收制回收， 而堆内存中的变量则不会，因为不确定其他的地方是不是还有一些对它的引用。 堆内存中的变量只有在所有对它的引用都结束的时候才会被回收。（引用计数、标记清除）
 
 ## 闭包中的变量保存
+
+闭包：当函数可以记住并访问所在的词法作用域时，就产生了闭包，即使函数是在当前词法作用域之外执行。
 
 闭包中函数里的变量是分配在堆中还是栈中？
 
