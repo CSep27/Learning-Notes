@@ -351,3 +351,95 @@ key 的作用是为了提高查找 vnode 的效率，降低算法复杂度。
 1. 数据变化，触发 watcher.update 方法，执行`_vender` 函数生成新的 vnode。（以组件为粒度进行更新）
 2. 新旧 vnode，深度优先比较，一直比较到最下面的子元素，调用 diff 算法比较
 3. 比较发现，如果元素可以复用，就按照规则移动，移动的是真实的 DOM 元素。
+
+# 父组件更新子组件数据
+
+通过 props 将数据传给子组件，在父组件中点击按钮修改数据。
+
+父组件：
+
+```vue
+<template>
+  <div class="update-parent">
+    <UpdateChildrenChild :items="items"></UpdateChildrenChild>
+    <button @click="change">change</button>
+  </div>
+</template>
+```
+
+子组件，仅用来展示父组件传递过来的数据
+
+```vue
+<template>
+  <div class="update-child">
+    <div class="update-child-container">
+      <ul>
+        <li v-for="item in items" :key="item.id">{{ item.val }}</li>
+      </ul>
+    </div>
+  </div>
+</template>
+```
+
+## 过程分析
+
+父组件进行 patch 比较时，比较到 UpdateChildrenChild 子组件时，在 patchVnode 函数中会触发 prepatch 钩子函数，执行 updateChildComponent 更新子组件。
+
+```js
+// patchVnode
+if (isDef(data) && isDef((i = data.hook)) && isDef((i = i.prepatch))) {
+  i(oldVnode, vnode);
+}
+```
+
+```js
+// inline hooks to be invoked on component VNodes during patch
+var componentVNodeHooks = {
+  prepatch: function (oldVnode, vnode) {
+    var options = vnode.componentOptions;
+    var child = (vnode.componentInstance = oldVnode.componentInstance);
+    updateChildComponent(
+      child,
+      options.propsData, // updated props
+      options.listeners, // updated listeners
+      vnode, // new parent vnode
+      options.children // new children
+    );
+  },
+};
+```
+
+如下代码，在 updateChildComponent 函数中会更新 props。
+
+propsData 对象里就是新的 items 数组，`var props = vm._props;`就是原来的 props 对象。
+
+`props[key] = validateProp(key, propOptions, propsData, vm);`经过 validateProp 函数校验了新的数据没问题后，就将新值会赋给 props 对象，也就是`props.items = 新数组`。
+
+```js
+// update props
+if (propsData && vm.$options.props) {
+  toggleObserving(false);
+  var props = vm._props;
+  var propKeys = vm.$options._propKeys || [];
+  for (var i = 0; i < propKeys.length; i++) {
+    var key = propKeys[i];
+    var propOptions = vm.$options.props; // wtf flow?
+    props[key] = validateProp(key, propOptions, propsData, vm);
+  }
+  toggleObserving(true);
+  // keep a copy of raw propsData
+  vm.$options.propsData = propsData;
+}
+```
+
+这一步是对`props.items`进行赋值操作，它是响应式数据，那么就会触发 setter 函数，执行`dep.notify`，把更新任务放到微任务队列中，queue 队列里会有两个 watcher。updateChildComponent 继续执行到结束。回到父组件执行 patchVnode 函数中直到父组件更新过程结束。
+
+父组件更新过程中，也就是微任务执行过程中，给 queue 队列又加了一条子组件的 watcher 数据。前面父组件更新过程执行结束，接下来就会执行 UpdateChildrenChild 子组件的 patch 更新。
+
+父组件和子组件都会执行一次`vm.$el = vm.__patch__(prevVnode, vnode);`
+
+## 总结
+
+父组件在 patch 更新过程中，更新到子组件时，会执行子组件的 prePatch 钩子函数。在这个函数中对 props 对象的属性进行了重新赋值，触发了 setter，将子组件的 watcher 添加到微任务队列 queue 中。
+
+等微任务队列中的第一条父组件任务执行完成，也就是 patch 完成后，继续执行前面加入的第二条任务，进行子组件的 patch 操作。
