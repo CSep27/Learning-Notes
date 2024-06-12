@@ -4,7 +4,7 @@
 
 调用之后得到结果，再执行其他任务
 
-```
+```js
 const test = () => {
   let t = +new Date();
   while (true) {
@@ -25,7 +25,7 @@ console.log(3);
 
 调用之后不管结果，继续执行其他任务
 
-```
+```js
 console.log(1);
 setTimeout(() => {
   console.log(2);
@@ -41,16 +41,16 @@ console.log(3);
 
 ### 进程
 
-    程序运行的实例
-    同一程序可以产生多个进程
-    一个进程包含一个或多个线程
+程序运行的实例
+同一程序可以产生多个进程
+一个进程包含一个或多个线程
 
 ### 线程
 
-    操作系统能够进行运算调度的最小单位
-    一次只能执行一个任务
-    有自己的调用栈、寄存器环境
-    同一进程的线程共享进程资源
+操作系统能够进行运算调度的最小单位
+一次只能执行一个任务
+有自己的调用栈、寄存器环境
+同一进程的线程共享进程资源
 
 查看进程的常用 linux 命令：
 查看进程的状态：`ps (process status)`
@@ -61,7 +61,7 @@ console.log(3);
 ## 浏览器的进程
 
 启动浏览器后，会产生多个进程
-![截屏2020-07-18 09.31.58.png](/img/bVbJQNr)
+![浏览器的进程](./images/浏览器的进程.webp)
 
 资料：
 [现代浏览器的多进程架构](https://juejin.im/post/5bd7c761518825292d6b0217)
@@ -100,11 +100,11 @@ JS 通过**浏览器内核的多线程**实现异步
 2. 定时器线程计数
 3. 事件触发线程将定时器事件放入任务队列
 4. 主线程通过 Event Loop 遍历任务队列
-   ![截屏2020-07-18 10.14.45.png](/img/bVbJQWV)
+   ![EventLoop](./images/EventLoop)
 
 代码分析：
 
-```
+```js
 console.log(1);
 setTimeout(() => {
   console.log(2);
@@ -112,20 +112,20 @@ setTimeout(() => {
 console.log(3);
 ```
 
-    执行过程：
-    console.log(1) 同步任务入栈执行，执行完出栈，打印1
-    调用setTimeout，定时2s
-    console.log(3) 同第一步，打印3
-    执行栈空，检查任务队列，不到2s还没有任务
-    2s到，事件触发线程将任务添加进任务队列
-    循环检查就会发现有任务，将任务放入执行栈执行，打印2
+执行过程：
+console.log(1) 同步任务入栈执行，执行完出栈，打印 1
+调用 setTimeout，定时 2s
+console.log(3) 同第一步，打印 3
+执行栈空，检查任务队列，不到 2s 还没有任务
+2s 到，事件触发线程将任务添加进任务队列
+循环检查就会发现有任务，将任务放入执行栈执行，打印 2
 
-![截屏2020-07-18 10.29.52.png](/img/bVbJQZ1)
+![代码执行过程](./images/代码执行过程.webp)
 
 ## 定时器可能存在的问题
 
 1. 定时任务可能不会按时执行
-   ```
+   ```js
    // 由于同步任务执行了5s，所以5s后才打印2
    const test = () => {
      let t = +new Date();
@@ -151,9 +151,9 @@ console.log(3);
 
 ## setTimeout 代码执行分析
 
-```
+```js
 for (var i = 1; i <= 10; i++) {
-  setTimeout(function() {
+  setTimeout(function () {
     console.log(i);
   }, 1000 * i);
 }
@@ -162,19 +162,19 @@ for (var i = 1; i <= 10; i++) {
 setTimeout 等同步的 for 循环执行后才执行，此时 i 已经变成 11，所以结果是每隔 1s 打印一个 11，打印 10 个 11
 
 1. 可以利用闭包形成作用域，保留 i 的值，可以实现打印每隔 1s 打印 1-10
-   ```
-     for (var i = 1; i <= 10; i++) {
-       (function (x) {
-         setTimeout(() => {
-           console.log(x)
-         }, 1000 * x)
-       })(i)
-     }
+   ```js
+   for (var i = 1; i <= 10; i++) {
+     (function (x) {
+       setTimeout(() => {
+         console.log(x);
+       }, 1000 * x);
+     })(i);
+   }
    ```
 2. 由于 var 没有块级作用域，所以换成 ES6 的 let 也可以实现
-   ```
+   ```js
    for (let i = 1; i <= 10; i++) {
-     setTimeout(function() {
+     setTimeout(function () {
        console.log(i);
      }, 1000 * i);
    }
