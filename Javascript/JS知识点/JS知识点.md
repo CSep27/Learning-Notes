@@ -153,3 +153,7 @@ JavaScript 的 Number 类型是一个**双精度 64 位二进制格式** IEEE 75
 - 1 位用于表示符号（sign）（正数或者负数）
 - 11 位用于表示指数（exponent）（-1022 到 1023）
 - 52 位用于表示尾数（mantissa）（表示 0 和 1 之间的数值）
+
+# undefined 类型
+
+从概念上讲，**undefined 表示值的缺失**，**null 表示对象的缺失**（这也可以说明 typeof null === "object" 的原因）。当某些东西没有值时，该语言通常默认为 undefined

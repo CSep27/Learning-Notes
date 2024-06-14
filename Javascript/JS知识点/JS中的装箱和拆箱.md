@@ -57,6 +57,8 @@ objStr.sayHi(); // hello kitty
 
 拆箱是指把引用类型转换成基本的数据类型。通常通过引用类型的 valueOf()和 toString()方法来实现。
 
+`toPrimitive(input,preferedType?)`
+
 ```js
 var objNum = new Number(64);
 var objStr = new String("64");
@@ -79,8 +81,6 @@ JavaScript 调用 valueOf 方法来将对象转换成基本类型值。你很少
 
 [JavaScript 中装箱和拆箱是什么？](https://blog.csdn.net/HuoYiHengYuan/article/details/104623046)
 
-待看：[JavaScript 数据类型和数据结构](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Data_structures)
+[JavaScript 数据类型和数据结构](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Data_structures)
 
-## undefined 类型
-
-从概念上讲，**undefined 表示值的缺失**，**null 表示对象的缺失**（这也可以说明 typeof null === "object" 的原因）。当某些东西没有值时，该语言通常默认为 undefined
+[JS 原始值转换算法---toPrimitive()](https://blog.csdn.net/suxuelengyin/article/details/82759437)

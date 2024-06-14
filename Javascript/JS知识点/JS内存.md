@@ -12,6 +12,8 @@
 
 [JS 中的内存管理](https://juejin.cn/post/6844903869525262349)
 
+待看[Stack vs Heap: What's the difference?](https://www.educative.io/blog/stack-vs-heap)
+
 # 内存管理
 
 ## 内存生命周期
