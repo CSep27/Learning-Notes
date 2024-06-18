@@ -2,6 +2,8 @@
 
 [如何防范 XSS](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
 
+XSS 属于被动攻击
+
 ## 编码输出
 
 ### 对“HTML 属性上下文”做输出编码

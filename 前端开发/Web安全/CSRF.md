@@ -2,7 +2,7 @@
 
 CSRF 介绍：[Cross Site Request Forgery](https://owasp.org/www-community/attacks/csrf)
 
-跨站请求伪造是强迫用户在已经授权的网站上执行非本意的操作的一种攻击。
+跨站请求伪造是强迫用户在已经授权的网站上执行非本意的操作的一种攻击，属于被动攻击。
 
 ## 描述
 

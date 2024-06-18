@@ -32,7 +32,7 @@ function defineReactive(obj, key, val) {
 export class Observer {
   constructor(value) {
     this.value = value;
-    this.dep = new Dep(); // 用到了吗？
+    // this.dep = new Dep();
     // this.vmCount = 0;
     // def(value, "__ob__", this);
     this.walk(value);
