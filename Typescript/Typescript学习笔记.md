@@ -40,7 +40,7 @@ let tom: Person = {
 
 - 函数声明：sum 函数，参数 x 和 y 都是 number，返回值为 number
 
-```js
+```t's
 // 函数声明
 function sum(x: number, y: number): number {
   return x + y;
@@ -50,7 +50,7 @@ function sum(x: number, y: number): number {
 - 函数表达式，手动给 mySum 添加类型
 - `(x: number, y: number) => number`，是一个函数定义，=>左边是输入类型，用括号括起来，右边是输出类型
 
-```js
+```ts
 let mySum: (x: number, y: number) => number = function (
   x: number,
   y: number
@@ -63,7 +63,7 @@ let mySum: (x: number, y: number) => number = function (
 
 - SearchFunc 接口中有一个函数，函数有两个 string 参数，返回值为 boolean 类型
 
-```js
+```ts
 interface SearchFunc {
   (source: string, subString: string): boolean;
 }
@@ -154,7 +154,7 @@ let fibonacci: NumberArray = [1, 1, 2, 3, 5];
 - 函数第一个参数 length 是 number 类型，第二个参数 value 类型不固定，指定为泛型 T。返回的值类型为 Array，其中的值类型与 value 一致，为泛型 T。在函数内部，定义 result 时，指定类型为 T
 - 调用 createArray 时，此时确定了 value 的类型为 string
 
-```js
+```ts
 function createArray<T>(length: number, value: T): Array<T> {
   let result: T[] = [];
   for (let i = 0; i < length; i++) {
@@ -163,7 +163,7 @@ function createArray<T>(length: number, value: T): Array<T> {
   return result;
 }
 
-createArray < string > (3, "x"); // ['x', 'x', 'x']
+createArray<string>(3, "x"); // ['x', 'x', 'x']
 ```
 
 ### 声明合并

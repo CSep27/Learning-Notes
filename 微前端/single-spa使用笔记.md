@@ -5,10 +5,10 @@
 1. 安装插件`npm i postcss-plugin-namespace`
 2. 根目录新建`postcss.config.js`
 
-```
+```js
 module.exports = {
-  plugins: [require("postcss-plugin-namespace")(".unique-classname")]
-}
+  plugins: [require("postcss-plugin-namespace")(".unique-classname")],
+};
 ```
 
 3. 入口 vue 文件中，根元素增加类名`unique-classname`
@@ -58,10 +58,10 @@ $bem-object-namespace: 'op'; // 修改命名空间
 2. 改造子应用的 mount 和 unmount 方法，分别在其中调用 active 和 inactive 方法
 3. 如果给 window 挂载属性需要在调用 active 方法之后挂载，沙箱才能起到隔离的作用
 
-```
+```js
 // 主应用
 import { registerApplication, start } from "single-spa";
-import SnapshotSandbox from './sandbox/snapshot-sandbox'
+import SnapshotSandbox from "./sandbox/snapshot-sandbox";
 const sandboxService = new SnapshotSandbox();
 
 registerApplication({
@@ -78,7 +78,7 @@ start();
 // 子应用
 export async function mount(props) {
   props.sandbox.active();
-  window.service = 's';
+  window.service = "s";
   return vueLifecycles.mount(props);
 }
 export async function unmount(props) {
@@ -97,18 +97,18 @@ export async function unmount(props) {
 
 - styleguide 组件的 main.ts 中导出方法和组件
 
-```
-import * as utils from './utils/index';
+```js
+import * as utils from "./utils/index";
 // ...
 export { utils };
-export { default as PageHeader } from './components/page-header.vue';
+export { default as PageHeader } from "./components/page-header.vue";
 ```
 
 - 其他子应用使用（借助 system.js）
 
 1. 在入口 main.js 中导入，并全局注册
 
-```
+```js
 // main.js
 (async () => {
   const { utils, PageHeader } = await window.System.import('@vue-mf/styleguide');
@@ -123,23 +123,23 @@ console.log(this.utils.deepCopy({c: 'utils'}));
 
 2. 在要使用的页面导入
 
-```
+```js
 // home-vue.vue
 export default {
   components: {
     PageHeader: async () => {
-      const { PageHeader } = await window.System.import('@vue-mf/styleguide');
+      const { PageHeader } = await window.System.import("@vue-mf/styleguide");
       return PageHeader;
-    }
+    },
   },
   data() {
     return {
       utils: {},
-    }
+    };
   },
   async created() {
-    const { utils } = await window.System.import('@vue-mf/styleguide');
+    const { utils } = await window.System.import("@vue-mf/styleguide");
     this.utils = utils;
-  }
-}
+  },
+};
 ```

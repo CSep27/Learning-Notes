@@ -1,29 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.5.17-beta.0/vue.js"></script>
-  </head>
-  <body>
-    <div id="mount-point"></div>
-  </body>
-  <script>
-    // 创建构造器
-    var Profile = Vue.extend({
-      template: "<p>{{firstName}} {{lastName}} aka {{alias}}</p>",
-      data: function () {
-        return {
-          firstName: "Walter",
-          lastName: "White",
-          alias: "Heisenberg",
-        };
-      },
-    });
-    // 创建 Profile 实例，并挂载到一个元素上。
-    new Profile().$mount("#mount-point");
-    // 一般是 new Vue().$mount()
-    // 这里Profile是Vue的子类，继承了Vue的方法
-  </script>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.5.17-beta.0/vue.js"></script>
+</head>
+
+<body>
+  <div id="mount-point"></div>
+</body>
+<script>
+  // 创建构造器
+  var Profile = ({
+    template: "<p>{{firstName}} {{lastName}} aka {{alias}}</p>",
+    data: function () {
+      return {
+        firstName: "Walter",
+        lastName: "White",
+        alias: "Heisenberg",
+      };
+    },
+  });
+  // 创建 Profile 实例，并挂载到一个元素上。
+  new Profile().$mount("#mount-point");
+  // 一般是 new Vue().$mount()
+  // 这里Profile是Vue的子类，继承了Vue的方法
+</script>
+
 </html>

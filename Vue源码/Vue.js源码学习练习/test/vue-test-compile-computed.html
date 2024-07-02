@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.5.17-beta.0/vue.js"></script>
+</head>
+
+<body>
+  <div id="app"></div>
+</body>
+<script>
+  var res = Vue.compile("<div><div class='box'>{{ message }}</div><button @click='change'>change</button></div>");
+  /* 
+  render:
+  (function anonymous(
+    ) {
+    with(this){return _c('div',[_c('span',[_v(_s(message))])])}
+    })
+  */
+  console.log(res);
+  new Vue({
+    data: {
+      message: "hello",
+    },
+    methods: {
+      change: function (event) {
+        this.message = 'hi'
+      }
+    },
+    /* computed: {
+      // 计算属性的 getter
+      reversedMessage: function () {
+        // `this` 指向 vm 实例
+        return this.message.split('').reverse().join('')
+      }
+    }, */
+    render: res.render,
+    staticRenderFns: res.staticRenderFns,
+  }).$mount("#app");
+</script>
+
+</html>

@@ -4,7 +4,7 @@
 
 - 结构：一个 form 父组件，两个 form-item 并列子组件，form-item 中各有一个 input 子组件
 
-```
+```html
 <i-form :model="formValidate" :rules="ruleValidate">
   <i-form-item label="用户名" prop="name">
     <i-input v-model="formValidate.name"></i-input>
@@ -133,7 +133,7 @@ export default {
 
 - Vue.extend 的作用，就是基于 Vue 构造器，创建一个“子类”，它的参数跟 new Vue 的基本一样，但 data 要跟组件一样，是个函数，再配合 $mount ，就可以让组件渲染，并且挂载到任意指定的节点上
 
-```
+```js
 const Component = Vue.extend({
   template: `<div>{{message}}</div>`,
   data() {
@@ -159,21 +159,21 @@ new Component().$mount({el: '#app'})
 
 ## Render 函数渲染一个 .vue 文件
 
-```
-import Vue from 'vue'
-import Alert from './alert.vue'
+```js
+import Vue from "vue";
+import Alert from "./alert.vue";
 
-const props = {}
+const props = {};
 
 const instance = new Vue({
   render(h) {
     return h(Alert, {
-      props
-    })
-  }
-})
+      props,
+    });
+  },
+});
 // instance 相当于 上一种方法的 new Component()
-const component = instance.$mount()
+const component = instance.$mount();
 document.body.appendChild(component.$el);
 
 // 拿到alert组件，instance中只有一个组件
@@ -212,7 +212,7 @@ const alert = instance.$children[0];
 
 - 根组件 App.vue
 
-```
+```js
 export default {
   provide() {
     return {
@@ -229,7 +229,7 @@ export default {
 
 - 子组件 Home.vue
 
-```
+```vue
 <div>app: {{ app.userInfo.name }}</div>
 ```
 

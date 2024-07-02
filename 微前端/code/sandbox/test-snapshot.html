@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  class SnapshotSandbox {
+    #windowSnapshot = {}
+    #modifiedSnapshot = {}
+
+    constructor() {
+      this.snapshotRunning = false
+    }
+
+    #iter(obj, cb) {
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          cb(key)
+        }
+      }
+    }
+
+    active() {
+      // 1. 记录当前window对象的状态 放到 #windowSnapshot 对象上
+      // 之前的快照不再需要 #windowSnapshot 对象 初始化为 空对象
+      // 可以理解为拿了一张新底片 或者 画布 去记录
+      this.#windowSnapshot = {}
+
+      this.#iter(window, (prop) => {
+        this.#windowSnapshot[prop] = window[prop]
+      })
+
+      // 2. 将 #modifiedSnapshot 变化的部分还原到 window 上
+      // （如果有）上一次操作时对window的修改
+      Object.keys(this.#modifiedSnapshot).forEach(prop => {
+        window[prop] = this.#modifiedSnapshot[prop]
+      })
+
+      this.snapshotRunning = true
+
+    }
+
+    inactive() {
+      // 之前保存的部分不再需要，置为空对象
+      this.#modifiedSnapshot = {}
+      // 1. 将对window的修改放到 #modifiedSnapshot 对象上
+      // 2. 将window还原为 #windowSnapshot 保存的状态
+      this.#iter(window, (prop) => {
+        // window 上可以新增、删除、修改自定义属性
+        // 1. 假设新增了 那么 window[prop] 有值 this.#windowSnapshot[prop] 是undefined
+        // 2. 假设删除了 那么反过来
+        // 3. 假设修改了原来放的自定义属性
+        // 都会满足这个条件
+        if (window[prop] !== this.#windowSnapshot[prop]) {
+          this.#modifiedSnapshot[prop] = window[prop]
+          window[prop] = this.#windowSnapshot[prop]
+        }
+      })
+    }
+  }
+  const sandbox1 = new SnapshotSandbox()
+  const sandbox2 = new SnapshotSandbox()
+  // 激活沙箱1 
+  sandbox1.active()
+  // 挂载属性
+  window.s1 = 's1'
+  console.log(window.s1); // s1
+  // 失活沙箱1 
+  sandbox1.inactive();
+  console.log(window.s1); // undefined
+
+  // 激活沙箱2 
+  sandbox2.active()
+  // 挂载属性
+  window.s2 = 's2'
+  console.log(window.s1); // undefined
+  console.log(window.s2); // s2
+  // 失活沙箱2 
+  sandbox2.inactive();
+  console.log(window.s1); // undefined
+  console.log(window.s2); // undefined
+
+  // 再次激活沙箱1
+  sandbox1.active()
+  console.log(window.s1); // s1
+</script>
+
+</html>

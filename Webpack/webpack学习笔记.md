@@ -70,28 +70,28 @@
     - env(通常采用)
     - babel-preset-stage
   - 增加 presets 配置
-  ```
+  ```js
   module: {
-     rules: [
-         {
-             test: /\.js$/,
-             use: {
-                 loader: 'babel-loader',
-                 options: {
-                     presets: [
-                         '@babel/preset-env',
-                         {
-                             targets: {
-                                 browsers: ['>1%'] // 全球市场占有率大于1%的浏览器都能识别的
-                                 // node: '10'
-                                 // chrome: '59'
-                             }
-                         }
-                     ]
-                 }
-             }
-         }
-     ]
+    rules: [
+      {
+        test: /\.js$/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [
+              "@babel/preset-env",
+              {
+                targets: {
+                  browsers: [">1%"], // 全球市场占有率大于1%的浏览器都能识别的
+                  // node: '10'
+                  // chrome: '59'
+                },
+              },
+            ],
+          },
+        },
+      },
+    ];
   }
   ```
   - targets 是 preset 的核心配置，告诉 preset 编译的具体目标，支持以 browsers(常用)、node 或特定浏览器为目标
@@ -256,7 +256,7 @@ module.exports = function (css) {
 // app.js 解决局部类名重新编码的问题
 import test from './test.css'
 import test1 from './test1.css'
-document.getElementById('mydiv'.setAttribute('class', test.div1)
+document.getElementById('mydiv'.setAttribute('class', test.div1))
 ```
 
 #### less
@@ -733,7 +733,6 @@ module.exports = {
 ```
 
 - png 压缩的到 0.5 左右，gif、jpg 等图片看情况压缩到 0.8 到 0.6；base 转码一般在 5000byte 左右
--
 
 #### 2.2 html 中图片的处理
 
