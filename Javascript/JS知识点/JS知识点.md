@@ -146,7 +146,7 @@ num >> 1; // 2
 Math.floor(num / 2); // 2
 ```
 
-# Number
+# [Number](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 JavaScript 的 Number 类型是一个**双精度 64 位二进制格式** IEEE 754 值，类似于 Java 或者 C# 中的 double。这意味着它可以表示小数值，但是存储的数字的大小和精度有一些限制。简而言之，IEEE 754 双精度浮点数使用 64 位来表示 3 个部分：
 
