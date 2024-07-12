@@ -97,14 +97,14 @@
     let value
     let dirty = true // 为true表明依赖的变量发生了变化，此时需要重新计算
     let runner = effect(fn, {
-      schedular () {
+      schedular() {
         if (!dirty) {
           dirty = true
         }
       }
     })
     return {
-      get value () {
+      get value() {
         if (dirty) {
           // 何时将dirty重置为true，当执行fn后
           // 因此需要通过配置回调函数，在执行fn后将dirty重置为true

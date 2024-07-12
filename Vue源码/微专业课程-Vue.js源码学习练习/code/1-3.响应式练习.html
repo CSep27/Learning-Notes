@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
+
 <body>
-  
+
 </body>
 <script>
   let x
-  let y 
+  let y
   let f = n => n + 100
   let fz = n => n * 100
 
@@ -22,18 +24,18 @@
   }
 
   let Dep = class {
-    constructor () {
+    constructor() {
       // 存放收集的active
       this.deps = new Set()
     }
     // 依赖收集
-    depend () {
+    depend() {
       if (active) {
-       this.deps.add(active)
+        this.deps.add(active)
       }
     }
     // 触发
-    notify () {
+    notify() {
       this.deps.forEach(dep => dep())
     }
   }
@@ -42,11 +44,11 @@
     let value = initValue
     let dep = new Dep()
     return Object.defineProperty({}, 'value', {
-      get () {
+      get() {
         dep.depend()
         return value
       },
-      set (newValue) {
+      set(newValue) {
         value = newValue
         // active()
         dep.notify()
@@ -68,4 +70,5 @@
 
   x.value = 8
 </script>
+
 </html>

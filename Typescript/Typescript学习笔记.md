@@ -7,6 +7,7 @@
 - [Typescript 入门教程](https://ts.xcatliu.com/) —— 已看完
 - [深入理解 TypeScript](https://jkchao.github.io/typescript-book-chinese/) —— 还没看
 - [TypeScript 教程 ——阮一峰](https://wangdoc.com/typescript/) —— 没看，可以用来查询
+- [TypeScript 中文文档](https://www.tslang.cn/docs/home.html)
 
 # 学习笔记
 
@@ -40,7 +41,7 @@ let tom: Person = {
 
 - 函数声明：sum 函数，参数 x 和 y 都是 number，返回值为 number
 
-```t's
+```ts
 // 函数声明
 function sum(x: number, y: number): number {
   return x + y;
@@ -234,3 +235,82 @@ typescript 的编译配置文件
 
 - `"declaration": true,`，编译时自动生成.d.ts。
 - `"declarationDir": "dist"`指定.d.ts 文件的输出地址。
+
+# [三斜线指令](https://wangdoc.com/typescript/d.ts#%E4%B8%89%E6%96%9C%E6%9D%A0%E5%91%BD%E4%BB%A4)
+
+三斜线指令是包含单个 XML 标签的单行注释。 注释的内容会做为编译器指令使用。
+
+三斜线指令仅可放在包含它的文件的最顶端。 一个三斜线指令的前面只能出现单行或多行注释，或其它的三斜线指令。
+
+如果它们出现在一个语句或声明之后，那么它们会被当做普通的单行注释，并且不具有特殊的涵义。
+
+`/// <reference path="..." />`指令它用于声明文件间的依赖。
+
+`/// <reference types="..." />`指令声明了对某个包的依赖。
+
+对这些包的名字的解析与在 import 语句里对模块名的解析类似。可以简单地把三斜线类型引用指令当做 import 声明的包。
+
+例如，把 `/// <reference types="node" />`引入到声明文件，表明这个文件使用了 @types/node/index.d.ts 里面声明的名字；并且，这个包需要在编译阶段与声明文件一起被包含进来。
+
+仅当在你需要写一个 d.ts 文件时才使用这个指令。
+
+## 应用在 vue3 中
+
+Vite 默认的类型定义是写给它的 Node.js API 的。要将其补充到一个 Vite 应用的客户端代码环境中，请添加一个 d.ts 声明文件：
+
+```ts
+/// <reference types="vite/client" />
+```
+
+[vite-typescript](https://vitejs.cn/vite3-cn/guide/features.html#typescript)
+
+types 参数用来告诉编译器当前脚本依赖某个 DefinitelyTyped 类型库，通常安装在 node_modules/@types 目录。
+
+types 参数的值是类型库的名称，也就是安装到 node_modules/@types 目录中的子目录的名字。
+
+# d.ts 类型声明文件
+
+单独使用的模块，一般会同时提供一个单独的类型声明文件（declaration file），把本模块的外部接口的所有类型都写在这个文件里面，便于模块使用者了解接口，也便于编译器检查使用者的用法是否正确。
+
+类型声明文件里面只有类型代码，没有具体的代码实现。它的文件名一般为[模块名].d.ts 的形式，其中的 d 表示 declaration（声明）。
+
+## 类型声明文件来源
+
+类型声明文件主要有以下三种来源。
+
+- TypeScript 编译器自动生成。
+- TypeScript 内置类型文件。
+- 外部模块的类型声明文件，需要自己安装。
+
+### 自动生成
+
+在 tsconfig.json 文件里配置。
+
+```json
+{
+  "compilerOptions": {
+    "declaration": true, // 编译时自动生成.d.ts。
+    "declarationDir": "dist" // 指定.d.ts 文件的输出地址。
+  }
+}
+```
+
+### 内置声明文件
+
+安装 TypeScript 语言时，会同时安装一些内置的类型声明文件，主要是内置的全局对象（JavaScript 语言接口和运行环境 API）的类型声明。
+
+这些内置声明文件位于 TypeScript 语言安装目录的 lib 文件夹内
+
+使用编译选项 lib，指定加载哪些内置声明文件。
+
+```ts
+{
+  "compilerOptions": {
+    "lib": ["dom", "es2021"]
+  }
+}
+```
+
+### 外部类型声明文件
+
+https://wangdoc.com/typescript/d.ts#%E5%A4%96%E9%83%A8%E7%B1%BB%E5%9E%8B%E5%A3%B0%E6%98%8E%E6%96%87%E4%BB%B6

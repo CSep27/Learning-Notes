@@ -1,0 +1,50 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "algorithm",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/算法/code/recurision.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "MyPromiseTest",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/promise/my-promise-test.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "MyPromiseRace2",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/promise/my-promise-race2.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "vue-observer-pattern",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/Vue源码/Vue源码学习总结/code/vue-observer-pattern/index.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "后序遍历二叉树",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/算法/code/后序遍历二叉树.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "深拷贝",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/Javascript/JS知识点/code/deep-copy.js"
+    }
+  ]
+}

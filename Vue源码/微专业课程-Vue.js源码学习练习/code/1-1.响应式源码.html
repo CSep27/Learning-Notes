@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<title>Document</title>
 </head>
+
 <body>
-	
+
 </body>
 <script>
 	// 收集依赖 再通知依赖更新
@@ -25,11 +27,11 @@
 	// 当X变化时，引起y和z的变化，一个变化引发多个变化
 	class Dep {
 		constructor() {
-				// Set 数据结构 类似于数组，但成员都是唯一的
+			// Set 数据结构 类似于数组，但成员都是唯一的
 			// 通过new生成Set数据结构
 			this.deps = new Set()
 		}
-		depend () {
+		depend() {
 			// 依赖收集
 			if (active) {
 				console.log('depend')
@@ -37,7 +39,7 @@
 				this.deps.add(active)
 			}
 		}
-		notify () {
+		notify() {
 			// 触发
 			console.log('notify')
 			this.deps.forEach(dep => dep())
@@ -52,13 +54,13 @@
 		let value = initValue
 		let dep = new Dep()
 		return Object.defineProperty({}, 'value', {
-			get () {
+			get() {
 				console.log('get')
 				dep.depend()
 				console.log(dep)
 				return value
 			},
-			set (newValue) {
+			set(newValue) {
 				console.log('set')
 				value = newValue
 				dep.notify()
@@ -88,21 +90,9 @@
 
 	// 'active' 'get' 'depend' 200
 
-	// x.value = 2
+	x.value = 2
 	// 'set' 'notify' 'active' 'get' 300
 
-
-	// x.value = 2
-	/*let obj = {}
-	Object.defineProperty(obj, 'value', {
-		get () {
-			console.log('get')
-			return 1
-		},
-		set (newValue) {
-			console.log('set')
-			value = newValue
-		}
-	})*/
 </script>
+
 </html>

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<title>Document</title>
 </head>
+
 <body>
-	
+
 </body>
 <script>
 	let x
@@ -27,14 +29,14 @@
 			// 通过new生成Set数据结构
 			this.deps = new Set()
 		}
-		depend () {
+		depend() {
 			// 依赖收集
 			if (active) {
 				// 通过add()方法向Set结构加入成员
 				this.deps.add(active)
 			}
 		}
-		notify () {
+		notify() {
 			// 触发
 			this.deps.forEach(dep => dep())
 		}
@@ -43,17 +45,17 @@
 		let value = initValue
 		let dep = new Dep()
 		return Object.defineProperty({}, 'value', {
-			get () {
+			get() {
 				dep.depend()
 				return value
 			},
-			set (newValue) {
+			set(newValue) {
 				value = newValue
 				dep.notify()
 			}
 		})
 	}
-	
+
 	x = ref(1)
 	watch(() => {
 		y = fy(x.value)
@@ -73,4 +75,5 @@
 	3
 	*/
 </script>
+
 </html>

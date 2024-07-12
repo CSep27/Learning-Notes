@@ -5,6 +5,7 @@
 ## settings & workspace
 
 - [vscode - workspace](https://code.visualstudio.com/docs/editor/workspaces)
+- [中文版文档资料](https://vscode.github.net.cn/docs/editor/workspaces)
 
 - File > Preferences > Settings 查看配置，以下配置优先级逐渐增加
 - user 当前用户的配置 通过界面操作或者打开配置文件`C:\Users\w14700\AppData\Roaming\Code\User\settings.json`

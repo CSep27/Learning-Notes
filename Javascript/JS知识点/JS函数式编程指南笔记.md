@@ -1125,7 +1125,7 @@ function outerFunction() {
 }
 
 const inner = outerFunction();
-//// 输出："外部函数的变量"
+// 输出："外部函数的变量"
 inner();
 ```
 

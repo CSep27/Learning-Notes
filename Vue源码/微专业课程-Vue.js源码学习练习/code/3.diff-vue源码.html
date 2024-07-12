@@ -17,7 +17,7 @@
   // 软件开发中的所有问题都可以通过增加一层抽象来解决
   // All problem in computer science can be resolved by another level of indirection
   // 什么是diff?
-  updateChildren(parentElm, oldCh, newCh) {
+  function updateChildren(parentElm, oldCh, newCh) {
     let oldStartIdx = 0, newStartIdx = 0
     let oldEndIdx = oldCh.length - 1
     let oldStartVnode = oldCh[0]
@@ -87,7 +87,7 @@
     }
   }
 
-  patchVnode(oldVnode, vnode) {
+  function patchVnode(oldVnode, vnode) {
     const el = vnode.el = oldVnode.el
     let i, oldCh = oldVnode.children, ch = vnode.children
     if (oldVnode === vnode) return
