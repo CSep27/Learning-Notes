@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    /* 
+    x和y两个变量，之间的关系为fx
+    当x变化时，y自动根据关系fx变化，得到新值    
+    */
+    // let x = 1
+    // let y
+    // let fx = (x) => x + 1
+    // // 计算y值并打印
+    // y = fx(x)
+    // console.log(y);
+    // // x变化后，需要手动触发一次 y = fx(x)
+    // x = 2
+    // y = fx(x)
+    // console.log(y);
+
+    // // 需要有一个 watchEffect 函数，初始时执行一次
+    // // 之后在x变化时，自动执行
+    // watchEffect(() => {
+    //   y = fx(x)
+    //   console.log(y);
+    // })
+
+    /* 
+    那么对于目标类，需要管理的数据和方法有：
+    数据：
+    subs 存储订阅了目标的订阅者 数据类型：Set
+    方法：
+    addSub 添加订阅者
+    notify 通知订阅者
+    */
+    class Dep {
+      constructor() {
+        // this.subs = new Set()
+        this.subs = []
+      }
+      /* addSub(sub) {
+        if (!this.subs.has(sub)) {
+          this.subs.add(sub)
+        }
+      } */
+      addSub() {
+        if (!this.subs.includes(Dep.target)) {
+          this.subs.push(Dep.target)
+        }
+      }
+      notify() {
+        // sub是函数，执行
+        this.subs.forEach(sub => sub())
+      }
+    }
+    // 当前观察者
+    Dep.target = null
+    /* 
+    对于订阅者，也有一个类 Watcher 管理
+    数据：
+    deps 存储订阅者订阅了哪些目标 数据类型：Set
+    方法：
+    addDep 添加订阅目标
+    */
+    class Watcher {
+      constructor() {
+        this.deps = new Set()
+      }
+      addDep(dep) {
+        if (!this.deps.has(dep)) {
+          this.deps.add(dep)
+        }
+      }
+    }
+
+    // 那么就是需要设置和读取x的值时，能够监听到
+    // 假设有个ref()函数，可以将x变成了读取和设置都能感知到变化的响应式数据
+
+    const ref = (initialValue) => {
+      let value = initialValue
+      const dep = new Dep()
+      const obj = {}
+      Object.defineProperty(obj, 'value', {
+        get() {
+          // 这里addSub()的参数要传什么？怎么知道订阅者是谁？
+          // 传数据的方式要么通过函数参数，要么通过定义全局变量
+          // 这里没有传参的方式
+          // 那么就需要有一个全局变量来存储当前的订阅者
+          // 去到访问x.value的地方，将订阅者赋值给全局变量，然后在这里传入
+          // vue源码中是在 Dep上挂载了一个target属性，用来存储当前订阅者
+          // 因为是直接获取全局变量，也就可以不传参，直接在函数定义的地方可以拿到
+          Dep.target && dep.addSub()
+          return value;
+        },
+        set(newValue) {
+          // console.log(newValue);
+          value = newValue;
+          // 设置新值后，需要通知订阅者
+          dep.notify()
+        },
+      })
+      return obj
+    }
+    let x = ref(1)
+    /* console.log(x);
+    x.value = 2
+    console.log(x.value); */
+    let fx = (x) => x + 1
+
+    // 这整个是观察者，是x变化之后，对应计算出y的值，并打印，整个过程
+    // 所以放到函数中，也就是说x变化之后，需要触发整个函数执行
+    /* const watcher = () => {
+      y = fx(x.value)
+      console.log('y', y);
+    } */
+
+    const watchEffect = (watcher) => {
+      // 在第一次通过x得到y时，就要建立起x和y的关系
+      // 此时访问了x 对象的 getter
+      // x 是 目标，
+      // 会有很多目标，这些目标都有相同的属性和方法
+      // 面向对象编程，通过一个类 Dep 来管理 属性和方法
+      // 对于每一个目标，都 new Dep() 生成一个实例，表示当前目标
+
+      // 订阅者应该是 new Watcher()实例
+      Dep.target = watcher
+      // 初始时需要执行一次，执行过程中会执行dep.addSub
+      // 那么在这之前需要给将watcher赋值给全局观察者
+      watcher()
+      // 全局变量，那么在用完后应该置为初始值 null
+      Dep.target = null
+    }
+    watchEffect(() => {
+      y = fx(x.value)
+      console.log('y', y);
+    })
+    x.value = 2
+    // 如果有多个订阅者订阅了x
+    // 增加一个订阅者z
+    const fz = x => x * 100
+    let z
+    watchEffect(() => {
+      z = fz(x.value)
+      console.log('z', z);
+    })
+    // 当x变化时，y和z都变化
+    x.value = 3
+  </script>
+</body>
+
+</html>

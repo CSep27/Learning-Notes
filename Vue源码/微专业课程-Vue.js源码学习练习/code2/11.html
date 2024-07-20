@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    /* 
+    x和y两个变量，之间的关系为fx
+    当x变化时，y自动根据关系fx变化，得到新值    
+    */
+    let x = 1
+    let y
+    let fx = (x) => x + 1
+    // 计算y值并打印
+    y = fx(x)
+    console.log(y);
+    // x变化后，需要手动触发一次 y = fx(x)
+    x = 2
+    y = fx(x)
+    console.log(y);
+
+    // 需要有一个 watchEffect 函数，初始时执行一次
+    // 之后在x变化时，自动执行
+    watchEffect(() => {
+      y = fx(x)
+      console.log(y);
+    })
+
+    // 那么就是需要设置和读取x的值时，能够监听到
+    // 假设有个ref()函数，可以将x变成了读取和设置都能感知到变化的数据
+
+  </script>
+</body>
+
+</html>
