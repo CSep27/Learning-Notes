@@ -139,3 +139,13 @@ declare module "*.vue" {
 ```
 
 表示给所有的 vue 文件进行了声明，导出的是一个 vue 组件。
+
+# reduce
+
+声明位置：node_modules/typescript/lib/lib.es5.d.ts
+
+如果在使用过程中，不满足其对于该函数的类型声明，会报错。
+
+在`/learn-vue3/src/plugins/i18nPlugin.ts`插件代码中，使用 reduce 不满足任何一种声明情况，会报错。
+
+待解决：除了更换写法，还有其他办法吗？
