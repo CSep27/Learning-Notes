@@ -103,3 +103,4 @@ element-2.6.3.code-workspace 配置内容如下，覆盖掉用户配置。
 - px to rem & rpx & vw(cssrem)
 - git history
 - Markdown Preview Enhanced 预览 markdown 文件，快捷键`cmd-k v`
+- Todo Tree
