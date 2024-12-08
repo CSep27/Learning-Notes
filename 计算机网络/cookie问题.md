@@ -9,11 +9,11 @@
 - secure 表示仅当通过 https 访问时才会发送 cookie
 - samesite 表示 cookie 不会在跨站请求中被发送
 
-开发环境访问地址为`http://127.0.0.1:5137`，由于上面配置的限制，因此 cookie 设置不上
+开发环境访问地址为`http://127.0.0.1:5137`，由于上述配置的限制，因此 cookie 设置不上
 
 ## 解决方案
 
-参考：[聊聊 Cookie 的 SameSite 属性](https://juejin.cn/post/7171349320904474632)
+参考资料：[聊聊 Cookie 的 SameSite 属性](https://juejin.cn/post/7171349320904474632)
 
 ### 思路
 - 将开发环境访问地址和联调接口地址通过域名配置映射改成同站，满足 samesite 需求
@@ -35,5 +35,25 @@
     - 配置 https 访问
         - 下载`@vitejs/plugin-basic-ssl`插件，在 plugin 中加一下，不需要传配置，会生成自签名证书
         - 配置`secure:false`表示有证书但是不校验
+```js
+import basicSsl from '@vitejs/plugin-basic-ssl'
+export default defineConfig({
+  plugins: [basicSsl()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://a.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        secure: false,
+      }
+  },
+})
+```
 
 再用`https://a.com:5137`（5173为开发环境服务端口号）访问开发环境，由于开发服务和接口服务域名都为 a.com，仅仅端口不同，属于同站，因此可以成功设置 cookie
+
+### 文档
+- [vite: server.proxy](https://vitejs.cn/vite5-cn/config/server-options.html#server-proxy)
+- [http-proxy](https://vitejs.cn/vite5-cn/config/server-options.html#server-proxy) 
+- [@vitejs/plugin-basic-ssl](https://www.npmjs.com/package/@vitejs/plugin-basic-ssl)
